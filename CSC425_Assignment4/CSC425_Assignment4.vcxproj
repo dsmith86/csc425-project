@@ -80,10 +80,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\..\opengl\lib\LoadShaders.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="GLContext.h" />
   </ItemGroup>
   <ItemGroup>

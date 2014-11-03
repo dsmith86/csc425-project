@@ -1,5 +1,6 @@
 #include <iostream>
 #include "GLContext.h"
+#include "Cube.h"
 using namespace std;
 
 void display(void);
@@ -13,30 +14,20 @@ int main(int argc, char *argv[])
 	if (glContext->initContext(argc, argv, display))
 	{
 		material materials[] = {
-				{ "basic", "basic.vert", "basic.frag" },
-				{ "other", "basic.vert", "basic.frag" }
+				{ "basic", "basic.vert", "basic.frag" }
 		};
 
-		glContext->initShaders(materials, 2);
+		glContext->initShaders(materials, 1);
 
-		GLfloat triangleA[3][3] = {
-				{ -0.9, -0.9, 0.0},
-				{ -0.1, -0.9, 0.0 },
-				{ -0.5, -0.1, 0.0}
-		};
+		Cube cube = Cube({ 0.0, 0.0, 0.0 }, { 1.0, 1.0, 1.0 }, COLOR::RED);
 
-		GLfloat triangleB[3][3] = {
-				{ 0.1, 0.1, 0.0 },
-				{ 0.9, 0.1, 0.0 },
-				{ 0.5, 0.9, 0.0}
-		};
+		model cubeModel = cube.modelData();
+		cubeModel.shader = "basic";
 
-		model models[] = {
-				{ *triangleA, 3, "basic" },
-				{ *triangleB, 3, "other" }
-		};
+		model models[1];
+		models[0] = cubeModel;
 
-		glContext->initModels(models, 2);
+		glContext->initModels(models, 1);
 
 		glContext->run();
 	}

@@ -29,7 +29,7 @@ bool GLContext::initContext(int argc, char** argv, displayFunc dFunc)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(1280, 720);
+	glutInitWindowSize(512, 512);
 	glutInitContextVersion(4, 3);
 	glutInitContextProfile(GLUT_FORWARD_COMPATIBLE);
 	glutCreateWindow(argv[0]);

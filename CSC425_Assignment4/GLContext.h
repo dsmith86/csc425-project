@@ -13,10 +13,18 @@ struct material
 	const char *fragmentShader;
 };
 
+struct vec3
+{
+	float x;
+	float y;
+	float z;
+};
+
 struct model
 {
 	GLfloat *vertices;
 	size_t numVertices;
+	vec3 color;
 	const char *shader;
 };
 
