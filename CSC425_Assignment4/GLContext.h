@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <vector>
 #include "vgl.h"
 using namespace std;
 
@@ -22,8 +23,7 @@ struct vec3
 
 struct model
 {
-	GLfloat *vertices;
-	size_t numVertices;
+	vector<GLfloat> vertices;
 	vec3 color;
 	const char *shader;
 };

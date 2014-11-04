@@ -16,7 +16,8 @@ Cube::Cube(position3 origin, vec3 scale, COLOR color)
 		this->color = { 0.0, 1.0, 0.0 };
 		break;
 	case COLOR::BLUE:
-		this->color = { 0.0, 0.0, 0.0 };
+		this->color = { 0.0, 0.0, 1.0 };
+		break;
 	default:
 		this->color = { 1.0, 1.0, 1.0 };
 		break;
@@ -30,11 +31,11 @@ Cube::~Cube()
 
 model Cube::modelData()
 {
-	this->mModel = new model;
+	model m;
 
-	float scaleX = this->scale.x * 0.5;
-	float scaleY = this->scale.y * 0.5;
-	float scaleZ = this->scale.z * 0.5;
+	float scaleX = this->scale.x * 0.5f;
+	float scaleY = this->scale.y * 0.5f;
+	float scaleZ = this->scale.z * 0.5f;
 
 	float originX = this->origin.x;
 	float originY = this->origin.y;
@@ -48,7 +49,7 @@ model Cube::modelData()
 	cout << "originY: " << originY << endl;
 	cout << "originZ: " << originZ << endl;
 
-	GLfloat cube[36][VECTOR_SIZE] = {
+	GLfloat cube[VERTEX_COUNT][VECTOR_SIZE] = {
 			{ originX - scaleX, originY - scaleY, originZ - scaleZ }, // LEFT
 			{ originX - scaleX, originY + scaleY, originZ - scaleZ },
 			{ originX - scaleX, originY + scaleY, originZ + scaleZ },
@@ -87,9 +88,15 @@ model Cube::modelData()
 			{ originX - scaleX, originY - scaleY, originZ + scaleZ }
 	};
 
-	this->mModel->vertices = *cube;
-	this->mModel->numVertices = 36;
-	this->mModel->color = this->color;
+	for (int i = 0; i < VERTEX_COUNT; i++)
+	{
+		for (int j = 0; j < VECTOR_SIZE; j++)
+		{
+			m.vertices.push_back(cube[i][j]);
+		}
+	}
 
-	return *(this->mModel);
+	m.color = this->color;
+
+	return m;
 }

@@ -90,12 +90,18 @@ bool GLContext::initModels(const model m[], int n)
 		{
 			glBindVertexArray(this->VAOs[i]);
 			glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[i]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * m[i].numVertices * VECTOR_SIZE, m[i].vertices, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * m[i].vertices.size(), &m[i].vertices.front(), GL_STATIC_DRAW);
 
 			GLuint program = this->shaderPrograms[m[i].shader];
-			GLuint loc = glGetAttribLocation(program, "vPosition");
-			glEnableVertexAttribArray(loc);
-			glVertexAttribPointer(loc, VECTOR_SIZE, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+			glUseProgram(program);
+
+			GLuint posLoc = glGetAttribLocation(program, "vPosition");
+			glEnableVertexAttribArray(posLoc);
+			glVertexAttribPointer(posLoc, VECTOR_SIZE, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+			GLint colLoc = glGetUniformLocation(program, "uColor");
+			GLfloat color[4] = { m[i].color.x, m[i].color.y, m[i].color.z, 1.0 };
+			glUniform4fv(colLoc, 1, color);
 
 			this->models[i] = m[i];
 		}
@@ -124,7 +130,7 @@ void GLContext::render()
 		{
 			glUseProgram(this->shaderPrograms[this->models[i].shader]);
 			glBindVertexArray(this->VAOs[i]);
-			glDrawArrays(GL_TRIANGLES, 0, this->models[i].numVertices);
+			glDrawArrays(GL_TRIANGLES, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 		}
 
 		glFlush();

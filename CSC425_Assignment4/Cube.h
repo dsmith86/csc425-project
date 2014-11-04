@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define VERTEX_COUNT 36
+
 typedef enum
 {
 	RED, GREEN, BLUE
@@ -21,6 +23,5 @@ private:
 	position3 origin;
 	vec3 scale;
 	color3 color;
-	model *mModel;
 };
 
