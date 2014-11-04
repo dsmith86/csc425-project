@@ -26,6 +26,7 @@ struct model
 	vector<GLfloat> vertices;
 	vec3 color;
 	const char *shader;
+	GLenum renderType;
 };
 
 #pragma once

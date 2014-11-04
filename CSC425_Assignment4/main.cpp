@@ -19,15 +19,13 @@ int main(int argc, char *argv[])
 
 		glContext->initShaders(materials, 1);
 
-		Cube cube = Cube({ 0.0, 0.0, 0.0 }, { 1.0, 1.0, 1.0 }, COLOR::RED);
+		vector<model> models = vector<model>();
 
-		model cubeModel = cube.modelData();
-		cubeModel.shader = "basic";
+		models.push_back(Cube({ -0.5, 0.0, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::RED, "basic").modelData());
+		models.push_back(Cube({ 0.5, 0.0, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::GREEN, "basic").modelData());
+		models.push_back(Cube({ 0.0, 0.5, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::BLUE, "basic").modelData());
 
-		model models[1];
-		models[0] = cubeModel;
-
-		glContext->initModels(models, 1);
+		glContext->initModels(&models.front(), models.size());
 
 		glContext->run();
 	}
