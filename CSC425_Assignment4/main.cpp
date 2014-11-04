@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
 
 		vector<model> models = vector<model>();
 
-		models.push_back(Cube({ -0.5, 0.0, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::RED, "basic").modelData());
-		models.push_back(Cube({ 0.5, 0.0, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::GREEN, "basic").modelData());
-		models.push_back(Cube({ 0.0, 0.5, 0.0 }, { 0.1, 1.0, 1.0 }, COLOR::BLUE, "basic").modelData());
+		models.push_back(Cube({ -0.5, 0.0, 0.0 }, { 0.1, 0.1, 0.1 }, COLOR::RED, "basic").modelData());
+		models.push_back(Cube({ 0.5, 0.0, 0.0 }, { 0.1, 0.5, 1.0 }, COLOR::GREEN, "basic").modelData());
+		models.push_back(Cube({ 0.0, 0.5, 0.0 }, { 0.1, 0.2, 1.0 }, COLOR::BLUE, "basic").modelData());
 
 		glContext->initModels(&models.front(), models.size());
 

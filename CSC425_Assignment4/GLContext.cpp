@@ -132,6 +132,15 @@ void GLContext::render()
 			glUseProgram(program);
 			glBindVertexArray(this->VAOs[i]);
 
+			GLint mLoc = glGetUniformLocation(program, "vModel");
+			GLfloat model[4][4] = {
+				1.0, 0.0, 0.0, m.position.x,
+				0.0, 1.0, 0.0, m.position.y,
+				0.0, 0.0, 0.0, m.position.z,
+				0.0, 0.0, 0.0, 1.0
+			};
+			glUniformMatrix4fv(mLoc, 1, GL_FALSE, *model);
+
 			GLint colLoc = glGetUniformLocation(program, "uColor");
 			GLfloat color[4] = { m.color.x, m.color.y, m.color.z, 1.0 };
 			glUniform4fv(colLoc, 1, color);

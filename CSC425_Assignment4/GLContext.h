@@ -7,13 +7,6 @@ using namespace std;
 
 typedef void(*displayFunc)(void);
 
-struct material
-{
-	const char *materialName;
-	const char *vertexShader;
-	const char *fragmentShader;
-};
-
 struct vec3
 {
 	float x;
@@ -21,9 +14,17 @@ struct vec3
 	float z;
 };
 
+struct material
+{
+	const char *materialName;
+	const char *vertexShader;
+	const char *fragmentShader;
+};
+
 struct model
 {
 	vector<GLfloat> vertices;
+	vec3 position;
 	vec3 color;
 	const char *shader;
 	GLenum renderType;
