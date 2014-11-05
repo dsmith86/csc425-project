@@ -103,16 +103,26 @@ namespace GLContext {
 
 			for (int i = 0; i < n; i++)
 			{
+				int vertexCount = m[i].vertices.size();
+				int normalCount = m[i].normals.size();
+
 				glBindVertexArray(this->VAOs[i]);
 				glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[i]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * m[i].vertices.size(), &m[i].vertices.front(), GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount), NULL, GL_STATIC_DRAW);
+
+				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, &m[i].vertices.front());
+				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(GLfloat) * normalCount, &m[i].normals.front());
 
 				GLuint program = this->shaderPrograms[m[i].shader];
 				glUseProgram(program);
 
-				GLuint posLoc = glGetAttribLocation(program, "vPosition");
-				glEnableVertexAttribArray(posLoc);
-				glVertexAttribPointer(posLoc, VECTOR_SIZE, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+				GLuint vPosition = glGetAttribLocation(program, "vPosition");
+				glEnableVertexAttribArray(vPosition);
+				glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+				GLuint vNormal = glGetAttribLocation(program, "vNormal");
+				glEnableVertexAttribArray(vNormal);
+				glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
 
 
 

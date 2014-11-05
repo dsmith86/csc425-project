@@ -1,6 +1,6 @@
 #version 430 core
 
-in vec4 vPosition;
+in vec3 vPosition;
 in vec3 vNormal;
 
 uniform mat4 projection, view, model;
@@ -13,6 +13,6 @@ out vec4 color;
 
 void main()
 {
-	gl_Position = projection * view * model * vPosition;
+	gl_Position = projection * view * model * vec4(vPosition, 1.0);
 	color = uColor;
 }
