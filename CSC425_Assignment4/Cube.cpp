@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Cube::Cube(position3 origin, vec3 scale, COLOR color, const char *shader)
+Cube::Cube(position3 origin, GLContext::vec3 scale, COLOR color, const char *shader)
 {
 	this->origin = origin;
 	this->scale = scale;
@@ -31,9 +31,9 @@ Cube::~Cube()
 {
 }
 
-model Cube::modelData()
+GLContext::model Cube::modelData()
 {
-	model m;
+	GLContext::model m;
 
 	float scaleX = this->scale.x * 0.5f;
 	float scaleY = this->scale.y * 0.5f;
