@@ -1,7 +1,11 @@
 #include "GLContext.h"
 #include "LoadShaders.h"
 #include <iostream>
-
+#include <glm.hpp>
+#include <mat4x4.hpp>
+#include <vec3.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 
 GLContext::GLContext()
 {
@@ -25,7 +29,7 @@ GLContext::~GLContext()
 }
 
 
-bool GLContext::initContext(int argc, char** argv, displayFunc dFunc)
+bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
@@ -35,6 +39,7 @@ bool GLContext::initContext(int argc, char** argv, displayFunc dFunc)
 	glutCreateWindow(argv[0]);
 
 	glutDisplayFunc(dFunc);
+	glutReshapeFunc(rFunc);
 
 	if (glewInit()) {
 		cerr << "Unable to initialize GLEW ... exiting" << endl;
@@ -121,8 +126,10 @@ void GLContext::render()
 {
 	if (this->success)
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
+		glm::mat4 proj = glm::perspective<float>(90.0f, this->w / this->h, 0.01f, 100.0f);
+		glm::mat4 view = glm::mat4() * glm::lookAt(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
 		for (int i = 0; i < this->numVAOs; i++)
 		{
@@ -132,22 +139,30 @@ void GLContext::render()
 			glUseProgram(program);
 			glBindVertexArray(this->VAOs[i]);
 
-			GLint mLoc = glGetUniformLocation(program, "vModel");
-			GLfloat model[4][4] = {
-				1.0, 0.0, 0.0, m.position.x,
-				0.0, 1.0, 0.0, m.position.y,
-				0.0, 0.0, 0.0, m.position.z,
-				0.0, 0.0, 0.0, 1.0
-			};
-			glUniformMatrix4fv(mLoc, 1, GL_FALSE, *model);
-
 			GLint colLoc = glGetUniformLocation(program, "uColor");
 			GLfloat color[4] = { m.color.x, m.color.y, m.color.z, 1.0 };
 			glUniform4fv(colLoc, 1, color);
 
+			GLint projLoc = glGetUniformLocation(program, "projection");
+			GLint viewLoc = glGetUniformLocation(program, "view");
+			GLint modelLoc = glGetUniformLocation(program, "model");
+
+			glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(m.position.x, m.position.y, m.position.z));
+			glm::mat4 mod = translate;
+
+			glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mod));
+
 			glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 		}
 
-		glFlush();
+		glutSwapBuffers();
 	}
+}
+
+void GLContext::reshape(int w, int h)
+{
+	this->w = (float)w;
+	this->h = (float)h;
 }

@@ -6,6 +6,7 @@ using namespace std;
 #define VECTOR_SIZE 3
 
 typedef void(*displayFunc)(void);
+typedef void(*reshapeFunc)(int w, int h);
 
 struct vec3
 {
@@ -36,11 +37,12 @@ class GLContext
 public:
 	GLContext();
 	~GLContext();
-	bool initContext(int argc, char** argv, displayFunc dFunc);
+	bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc);
 	bool initShaders(const material s[], int n);
 	bool initModels(const model m[], int n);
 	void run();
 	void render();
+	void reshape(int w, int h);
 private:
 	bool success;
 	size_t numVAOs;
@@ -49,5 +51,7 @@ private:
 	GLuint *VBOs;
 	model *models;
 	unordered_map<const char*, GLuint> shaderPrograms;
+	float w;
+	float h;
 };
 
