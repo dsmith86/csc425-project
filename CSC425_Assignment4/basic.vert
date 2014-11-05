@@ -1,11 +1,8 @@
 #version 430 core
 
 in vec3 vPosition;
-in vec3 vNormal;
 
 uniform mat4 projection, view, model;
-
-uniform vec4 lightSource;
 
 uniform vec4 uColor;
 

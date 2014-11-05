@@ -124,7 +124,24 @@ namespace GLContext {
 				glEnableVertexAttribArray(vNormal);
 				glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
 
+				color4 light_ambient = color4(0.2, 0.2, 0.2, 1.0);
+				color4 light_diffuse = color4(1.0, 1.0, 1.0, 1.0);
+				color4 light_specular = color4(1.0, 1.0, 1.0, 1.0);
 
+				color4 material_ambient = color4(1.0, 0.0, 1.0, 1.0);
+				color4 material_diffuse = color4(1.0, 0.8, 0.0, 1.0);
+				color4 material_specular = color4(1.0, 0.8, 0.0, 1.0);
+				GLfloat material_shininess = 100;
+
+				color4 ambient_product = light_ambient * material_ambient;
+				color4 diffuse_product = light_diffuse * material_diffuse;
+				color4 specular_product = light_specular * material_specular;
+
+				glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, glm::value_ptr(ambient_product));
+				glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, glm::value_ptr(diffuse_product));
+				glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, glm::value_ptr(specular_product));
+
+				glUniform4fv(glGetUniformLocation(program, "Shininess"), 1, &material_shininess);;
 
 				this->models[i] = m[i];
 			}

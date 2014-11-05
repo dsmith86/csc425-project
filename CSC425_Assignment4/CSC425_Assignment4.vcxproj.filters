@@ -52,5 +52,8 @@
     <None Include="basic.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="shiny.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

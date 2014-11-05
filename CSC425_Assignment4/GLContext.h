@@ -2,6 +2,7 @@
 #include <vector>
 #include "vgl.h"
 #include "Camera.h"
+#include <vec3.hpp>
 
 namespace GLContext {
 
@@ -33,6 +34,8 @@ namespace GLContext {
 		const char *shader;
 		GLenum renderType;
 	};
+
+	typedef glm::vec4 color4;
 
 #pragma once
 	class GLContext
