@@ -42,7 +42,7 @@ GLContext::model Cube::modelData()
 	// courtesy of research publication "Optimizing Triangle Strips for Fast Rendering"
 	// http://www.cs.umd.edu/gvil/papers/av_ts.pdf
 
-	GLfloat cube[VERTEX_COUNT][VECTOR_SIZE] = {
+	GLfloat vertices[VERTEX_COUNT][VECTOR_SIZE] = {
 			{ -scaleX, scaleY, scaleZ }, // T-L-B
 			{ scaleX, scaleY, scaleZ }, // T-R-B
 			{ -scaleX, scaleY, -scaleZ }, // T-L-F
@@ -58,12 +58,30 @@ GLContext::model Cube::modelData()
 			{ -scaleX, -scaleY, scaleZ }, // B-L-B
 			{ scaleX, -scaleY, scaleZ }  // B-R-B
 	};
+
+	GLfloat normals[VERTEX_COUNT][VECTOR_SIZE] = {
+			{ 0.0, 1.0, 0.0}, // TOP
+			{ 0.0, 1.0, 0.0 }, // TOP
+			{ 0.0, 1.0, 0.0 }, // TOP
+			{ 0.0, 1.0, 0.0 }, // TOP
+			{ 0.0, 0.0, -1.0 }, // FRONT
+			{ -1.0, 0.0, 0.0 }, // RIGHT
+			{ -1.0, 0.0, 0.0 }, // RIGHT
+			{ 0.0, 0.0, 1.0 }, // BACK
+			{ 0.0, 0.0, 1.0 }, // BACK
+			{ 1.0, 0.0, 0.0 }, // LEFT
+			{ 1.0, 0.0, 0.0 }, // LEFT
+			{ 0.0, 0.0, -1.0 }, // FRONT
+			{ 0.0, -1.0, 0.0 }, // BOTTOM
+			{ 0.0, -1.0, 0.0 }, // BOTTOM
+	};
 	
 	for (int i = 0; i < VERTEX_COUNT; i++)
 	{
 		for (int j = 0; j < VECTOR_SIZE; j++)
 		{
-			m.vertices.push_back(cube[i][j]);
+			m.vertices.push_back(vertices[i][j]);
+			m.normals.push_back(normals[i][j]);
 		}
 	}
 

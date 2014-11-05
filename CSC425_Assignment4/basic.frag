@@ -1,9 +1,9 @@
 #version 430 core
 
-uniform vec4 uColor;
+in vec4 color;
 out vec4 fColor;
 
 void main()
 {
-	fColor = uColor;
+	fColor = color;
 }

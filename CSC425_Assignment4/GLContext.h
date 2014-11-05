@@ -27,6 +27,7 @@ namespace GLContext {
 	struct model
 	{
 		std::vector<GLfloat> vertices;
+		std::vector<GLfloat> normals;
 		vec3 position;
 		vec3 color;
 		const char *shader;
@@ -43,12 +44,14 @@ namespace GLContext {
 		bool initShaders(const material s[], int n);
 		bool initModels(const model m[], int n);
 		void initCamera(vec3 position, vec3 gaze);
+		void initLight(float x, float y, float z);
 		void run();
 		void render();
 		void reshape(int w, int h);
 	private:
 		Camera *camera;
 		bool cameraInitialized;
+		vec3 light;
 		bool success;
 		size_t numVAOs;
 		size_t numVBOs;

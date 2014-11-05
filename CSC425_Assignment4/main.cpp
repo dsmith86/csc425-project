@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
+		glContext->initLight(0, 0, 0);
 		glContext->run();
 	}
 

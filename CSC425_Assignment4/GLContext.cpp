@@ -135,6 +135,11 @@ namespace GLContext {
 
 	}
 
+	void GLContext::initLight(float x, float y, float z)
+	{
+		this->light = { x, y, z };
+	}
+
 	void GLContext::run()
 	{
 		if (this->success)
@@ -166,6 +171,10 @@ namespace GLContext {
 				GLint colLoc = glGetUniformLocation(program, "uColor");
 				GLfloat color[4] = { m.color.x, m.color.y, m.color.z, 1.0 };
 				glUniform4fv(colLoc, 1, color);
+
+				GLint lightLoc = glGetUniformLocation(program, "lightSource");
+				GLfloat light[4] = { this->light.x, this->light.y, this->light.z, 1.0 };
+				glUniform3fv(lightLoc, 1, light);
 
 				GLint projLoc = glGetUniformLocation(program, "projection");
 				GLint viewLoc = glGetUniformLocation(program, "view");
