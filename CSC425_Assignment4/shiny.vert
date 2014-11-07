@@ -16,13 +16,8 @@ uniform vec4 uColor;
 
 void main()
 {
-	vec4 aProduct = AmbientProduct * vec4(1.0, 0.0, 1.0, 1.0);
-	vec4 dProduct = DiffuseProduct * vec4(1.0, 0.8, 0.0, 1.0);
-	vec4 sProduct = SpecularProduct * vec4(1.0, 0.8, 0.0, 1.0);
-
-
 	// Transform vertex  position into eye coordinates
-    vec3 pos = (view * model  * vec4(vPosition, 1.0)).xyz;
+    vec3 pos = (view * model * vec4(vPosition, 1.0)).xyz;
 	
     vec3 L = normalize( LightPosition.xyz - pos );
     vec3 E = normalize( -pos );
