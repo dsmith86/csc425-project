@@ -21,14 +21,14 @@ int main(int argc, char *argv[])
 	vector<GLContext::model> models = vector<GLContext::model>();
 
 	models.push_back(Cube({ 3.0, 1.0, 5.0 }, { 1.0, 1.0, 1.0 }, COLOR::RED, "basic").modelData());
-	models.push_back(Cube({ 0.5, -1.5, 2.0 }, { .7, .7, .7 }, COLOR::GREEN, "shiny").modelData());
-	models.push_back(Cube({ 0.0, 0.5, 0.0 }, { .5, .1, .5 }, COLOR::BLUE, "basic").modelData());
+	models.push_back(Cube({ -1.0, 1.0, 0.0 }, { 0.7, 0.7, 0.7 }, COLOR::GREEN, "shiny").modelData());
+	models.push_back(Cube({ 0.0, -1.5, 0.0 }, { .5, .1, .5 }, COLOR::BLUE, "basic").modelData());
 	
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 2) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
-		glContext->initLight(0, 0, 0);
+		glContext->initLight(1, 1, 1);
 		glContext->run();
 	}
 

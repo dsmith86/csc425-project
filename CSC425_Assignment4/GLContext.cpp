@@ -9,6 +9,8 @@
 
 namespace GLContext {
 
+	bool validAttribLocation(GLuint location);
+
 	GLContext::GLContext()
 	{
 		this->success = false;
@@ -34,8 +36,8 @@ namespace GLContext {
 	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc)
 	{
 		glutInit(&argc, argv);
-		glutInitDisplayMode(GLUT_RGBA);
-		glutInitWindowSize(512, 512);
+		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+		glutInitWindowSize(1024, 1024);
 		glutInitContextVersion(4, 3);
 		glutInitContextProfile(GLUT_FORWARD_COMPATIBLE);
 		glutCreateWindow(argv[0]);
@@ -52,7 +54,7 @@ namespace GLContext {
 		vec3 cameraPosition;
 		cameraPosition.x = 0;
 		cameraPosition.y = 0;
-		cameraPosition.z = -1;
+		cameraPosition.z = -3;
 		vec3 cameraGaze = { 0.0, 0.0, 0.0 };
 
 		initCamera(cameraPosition, cameraGaze);
@@ -108,7 +110,7 @@ namespace GLContext {
 
 				glBindVertexArray(this->VAOs[i]);
 				glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[i]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount), NULL, GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount), NULL, GL_STATIC_DRAW);
 
 				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, &m[i].vertices.front());
 				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(GLfloat) * normalCount, &m[i].normals.front());
@@ -121,27 +123,13 @@ namespace GLContext {
 				glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 				GLuint vNormal = glGetAttribLocation(program, "vNormal");
-				glEnableVertexAttribArray(vNormal);
-				glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
 
-				color4 light_ambient = color4(0.2, 0.2, 0.2, 1.0);
-				color4 light_diffuse = color4(1.0, 1.0, 1.0, 1.0);
-				color4 light_specular = color4(1.0, 1.0, 1.0, 1.0);
-
-				color4 material_ambient = color4(1.0, 0.0, 1.0, 1.0);
-				color4 material_diffuse = color4(1.0, 0.8, 0.0, 1.0);
-				color4 material_specular = color4(1.0, 0.8, 0.0, 1.0);
-				GLfloat material_shininess = 100;
-
-				color4 ambient_product = light_ambient * material_ambient;
-				color4 diffuse_product = light_diffuse * material_diffuse;
-				color4 specular_product = light_specular * material_specular;
-
-				glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, glm::value_ptr(ambient_product));
-				glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, glm::value_ptr(diffuse_product));
-				glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, glm::value_ptr(specular_product));
-
-				glUniform4fv(glGetUniformLocation(program, "Shininess"), 1, &material_shininess);;
+				if (validAttribLocation(vNormal))
+				{
+					glEnableVertexAttribArray(vNormal);
+					glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
+				}
+				
 
 				this->models[i] = m[i];
 			}
@@ -181,11 +169,8 @@ namespace GLContext {
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glm::mat4 test = glm::lookAt(this->camera->getUp(), this->camera->getGaze(), this->camera->getUp());
-			glm::mat4 test2 = glm::lookAt(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
-			glm::mat4 proj = glm::perspective<float>(90.0f, this->w / this->h, 0.01f, 100.0f);
-			glm::mat4 view = glm::mat4() * glm::lookAt(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+			glm::mat4 proj = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
+			glm::mat4 view = glm::mat4() * glm::lookAt(glm::vec3(0.0, 0.0, -5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
 			for (int i = 0; i < this->numVAOs; i++)
 			{
@@ -199,9 +184,9 @@ namespace GLContext {
 				GLfloat color[4] = { m.color.x, m.color.y, m.color.z, 1.0 };
 				glUniform4fv(colLoc, 1, color);
 
-				GLint lightLoc = glGetUniformLocation(program, "lightSource");
+				GLint lightLoc = glGetUniformLocation(program, "LightPosition");
 				GLfloat light[4] = { this->light.x, this->light.y, this->light.z, 1.0 };
-				glUniform3fv(lightLoc, 1, light);
+				glUniform4fv(lightLoc, 1, light);
 
 				GLint projLoc = glGetUniformLocation(program, "projection");
 				GLint viewLoc = glGetUniformLocation(program, "view");
@@ -213,6 +198,32 @@ namespace GLContext {
 				glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 				glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mod));
+
+				float r = m.color.x;
+				float g = m.color.y;
+				float b = m.color.z;
+				color4 light_ambient = glm::vec4(r, g, b, 1.0);
+				color4 light_diffuse = color4(1.0, 1.0, 1.0, 1.0);
+				color4 light_specular = color4(1.0, 1.0, 1.0, 1.0);
+
+				color4 material_ambient = color4(1.0, 0.0, 1.0, 1.0);
+				color4 material_diffuse = color4(1.0, 0.8, 0.0, 1.0);
+				color4 material_specular = color4(1.0, 0.8, 0.0, 1.0);
+				GLfloat material_shininess = 100;
+
+				color4 ambient_product = light_ambient * material_ambient;
+				color4 diffuse_product = light_diffuse * material_diffuse;
+				color4 specular_product = light_specular * material_specular;
+
+				GLfloat ambient[4] = { 0.1 * r, 0.1 * g, 0.1 * b, 1.0 };
+				GLfloat diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
+				GLfloat specular[4] = { 1.0, 1.0, 1.0, 1.0 };
+
+				glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, ambient);
+				glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, diffuse);
+				glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, specular);
+
+				glUniform1f(glGetUniformLocation(program, "Shininess"), material_shininess);
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}
@@ -227,4 +238,11 @@ namespace GLContext {
 		this->h = (float)h;
 	}
 
+	bool validAttribLocation(GLuint location)
+	{
+		int max_attribs;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
+
+		return location < (GLuint)max_attribs;
+	}
 }
