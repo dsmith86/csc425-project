@@ -13,11 +13,26 @@ uniform float Shininess;
 
 uniform vec4 uColor;
 
-
 void main()
 {
-    gl_Position = projection * view * model * vec4(vPosition, 1.0);
+	vec4 vertex_position = vec4(vPosition, 1.0);
 
-	color = uColor;
+    gl_Position = projection * view * model * vertex_position;
 
+	vec3 pos = (model * view * vertex_position).xyz;
+
+	vec3 L = normalize(LightPosition.xyz - pos);
+	vec3 E = normalize(-pos);
+	vec3 H = normalize(L + E);
+
+	vec3 N = normalize(vec4(vNormal, 0.0)).xyz;
+
+	vec4 ambient = vec4(0.1 * uColor.x, 0.1 * uColor.y, 0.1 * uColor.z, 1.0);
+
+	float Kd = max(dot(L, N), 0.0);
+	vec4 diffuse = Kd * uColor * 2;
+
+
+
+	color = ambient + diffuse;
 }

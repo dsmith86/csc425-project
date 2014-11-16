@@ -41,6 +41,8 @@ namespace GLContext {
 		glutInitContextVersion(4, 3);
 		glutInitContextProfile(GLUT_FORWARD_COMPATIBLE);
 		glutCreateWindow(argv[0]);
+		
+		glEnable(GL_DEPTH_TEST);
 
 		glutDisplayFunc(dFunc);
 		glutReshapeFunc(rFunc);
@@ -171,7 +173,7 @@ namespace GLContext {
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 
 			glm::mat4 proj = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
-			glm::mat4 view = glm::mat4() * glm::lookAt(glm::vec3(0.0, 0.0, -5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+			glm::mat4 view = glm::mat4() * glm::lookAt(glm::vec3(-2.0, -5.0, -10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
 			for (int i = 0; i < this->numVAOs; i++)
 			{
