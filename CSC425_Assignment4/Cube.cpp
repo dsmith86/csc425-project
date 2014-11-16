@@ -4,12 +4,13 @@ using namespace std;
 
 void pushBack(vector<GLfloat> *vector, int times, DIRECTIONS d, int arraySize);
 
-Cube::Cube(position3 position, GLContext::vec3 scale, COLOR color, const char *shader)
+Cube::Cube(position3 position, GLContext::vec3 scale, COLOR color, const char *shader, GLfloat shininess)
 {
 	this->position = position;
 	this->scale = scale;
 	this->shader = shader;
 	this->renderType = renderType;
+	this->shininess = shininess;
 	
 	switch (color)
 	{
@@ -79,6 +80,7 @@ GLContext::model Cube::modelData()
 	m.renderType = GL_TRIANGLES;
 	m.shader = this->shader;
 	m.position = this->position;
+	m.shininess = this->shininess;
 
 	return m;
 }

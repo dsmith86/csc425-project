@@ -32,7 +32,8 @@ void main()
 	float Kd = max(dot(L, N), 0.0);
 	vec4 diffuse = Kd * uColor * 2;
 
+	float Ks = max(dot(N, H), 0.0);
+	vec4 specular = Ks * uColor * Shininess;
 
-
-	color = ambient + diffuse;
+	color = ambient + diffuse + specular;
 }

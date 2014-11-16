@@ -212,7 +212,7 @@ namespace GLContext {
 				color4 material_ambient = color4(1.0, 0.0, 1.0, 1.0);
 				color4 material_diffuse = color4(1.0, 0.8, 0.0, 1.0);
 				color4 material_specular = color4(1.0, 0.8, 0.0, 1.0);
-				GLfloat material_shininess = 100;
+				GLfloat material_shininess = this->shaderPrograms[m.shader];
 
 				color4 ambient_product = light_ambient * material_ambient;
 				color4 diffuse_product = light_diffuse * material_diffuse;
@@ -226,7 +226,7 @@ namespace GLContext {
 				glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, diffuse);
 				glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, specular);
 
-				glUniform1f(glGetUniformLocation(program, "Shininess"), material_shininess);
+				glUniform1f(glGetUniformLocation(program, "Shininess"), m.shininess);
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}

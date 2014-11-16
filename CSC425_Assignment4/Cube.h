@@ -27,7 +27,7 @@ typedef GLContext::vec3 position3;
 class Cube
 {
 public:
-	Cube(position3 position, GLContext::vec3 scale, COLOR color, const char *shader);
+	Cube(position3 position, GLContext::vec3 scale, COLOR color, const char *shader, GLfloat shininess);
 	~Cube();
 	GLContext::model modelData();
 private:
@@ -36,5 +36,6 @@ private:
 	color3 color;
 	const char *shader;
 	GLenum renderType;
+	GLfloat shininess;
 };
 

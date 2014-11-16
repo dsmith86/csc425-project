@@ -33,6 +33,7 @@ namespace GLContext {
 		vec3 color;
 		const char *shader;
 		GLenum renderType;
+		GLfloat shininess;
 	};
 
 	typedef glm::vec4 color4;
