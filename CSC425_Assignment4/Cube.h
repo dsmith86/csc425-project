@@ -22,20 +22,26 @@ typedef enum
 } DIRECTIONS;
 
 typedef GLContext::vec3 color3;
+typedef GLContext::vec3 scale3;
 typedef GLContext::vec3 position3;
+typedef GLContext::vec3 rotation3;
 
 class Cube
 {
 public:
-	Cube(position3 position, GLContext::vec3 scale, COLOR color, const char *shader, GLfloat shininess);
+	Cube(position3 position, scale3 scale, COLOR color, const char *shader); // basic, shaded
+	Cube(position3 position, scale3 scale, const char *texture, const char *shader);
+	Cube* setRotation(GLContext::DIRECTION direction, float theta);
 	~Cube();
 	GLContext::model modelData();
 private:
 	position3 position;
-	GLContext::vec3 scale;
+	scale3 scale;
+	GLContext::DIRECTION rotationAxis;
+	float rotationTheta;
 	color3 color;
+	const char *texture;
 	const char *shader;
 	GLenum renderType;
-	GLfloat shininess;
 };
 

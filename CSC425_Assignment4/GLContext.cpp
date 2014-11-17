@@ -1,6 +1,7 @@
 #include "GLContext.h"
 #include "LoadShaders.h"
 #include <iostream>
+#include <math.h>
 #include <glm.hpp>
 #include <mat4x4.hpp>
 #include <vec3.hpp>
@@ -44,7 +45,7 @@ namespace GLContext {
 		
 		glEnable(GL_DEPTH_TEST);
 
-		glutDisplayFunc(dFunc);
+		glutIdleFunc(dFunc);
 		glutReshapeFunc(rFunc);
 
 		if (glewInit()) {
@@ -195,8 +196,13 @@ namespace GLContext {
 				GLint viewLoc = glGetUniformLocation(program, "view");
 				GLint modelLoc = glGetUniformLocation(program, "model");
 
-				glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(m.position.x, m.position.y, m.position.z));
-				glm::mat4 mod = translate;
+				int deltaTime = glutGet(GLUT_ELAPSED_TIME);
+				float theta = fmod(m.rotationTheta * deltaTime, 360);
+
+				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
+				glm::mat4 modelTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(m.position.x, m.position.y, m.position.z));
+				glm::mat4 modelRotation = glm::rotate(modelTranslate, theta, rotationTheta);
+				glm::mat4 mod = modelRotation;
 
 				glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 				glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -231,6 +237,7 @@ namespace GLContext {
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}
 
+			glFlush();
 			glutSwapBuffers();
 		}
 	}

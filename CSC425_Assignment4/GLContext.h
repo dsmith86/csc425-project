@@ -11,6 +11,10 @@ namespace GLContext {
 	typedef void(*displayFunc)(void);
 	typedef void(*reshapeFunc)(int w, int h);
 
+	typedef enum {
+		UP, LEFT, FRONT
+	} DIRECTION;
+
 	struct vec3
 	{
 		float x;
@@ -30,6 +34,8 @@ namespace GLContext {
 		std::vector<GLfloat> vertices;
 		std::vector<GLfloat> normals;
 		vec3 position;
+		DIRECTION rotationAxis;
+		float rotationTheta;
 		vec3 color;
 		const char *shader;
 		GLenum renderType;
