@@ -98,7 +98,10 @@ xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <None Include="basic.frag" />
     <None Include="basic.vert" />
     <None Include="shiny.vert" />
-    <None Include="texture.frag" />
+    <None Include="texture.frag">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </DeploymentContent>
+    </None>
     <None Include="texture.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
