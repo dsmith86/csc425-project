@@ -61,8 +61,8 @@
       <AdditionalDependencies>freeglut_static_vs2010_d.lib;glew_static_vs2010_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(ProjectDir)DLLs\*.*" "$(OutDir)"
-xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
+      <Command>REM xcopy /d /y "$(ProjectDir)DLLs\*.*" "$(OutDir)"
+REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
