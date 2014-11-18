@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	glContext = new GLContext::GLContext();
 
 	GLContext::material materials[] = {
-			{ "texture", "texture.vert", "basic.frag" }
+			{ "texture", "texture.vert", "texture.frag" }
 	};
 
 	modelBag models = modelBag();
@@ -59,8 +59,6 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 		models.push_back(Cube({ 0.0, 0.0, 0.0 }, { 1.0, 1.0, 1.0 }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.1)->modelData());
 		return;
 	}
-
-	
 
 	for (int i = 0; i < count; i++)
 	{

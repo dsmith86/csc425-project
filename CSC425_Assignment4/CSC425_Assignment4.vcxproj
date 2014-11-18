@@ -52,14 +52,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opengl\glm\glm;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\opengl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\opengl\DevIL\include;C:\opengl\glm\glm;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\opengl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files (x86%)\Microsoft SDKs\Windows\v7.1A\Lib\x64;C:\opengl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut_static_vs2010_d.lib;glew_static_vs2010_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\opengl\DevIL\lib;C:\Program Files (x86%)\Microsoft SDKs\Windows\v7.1A\Lib\x64;C:\opengl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut_static_vs2010_d.lib;glew_static_vs2010_d.lib;opengl32.lib;DevIL.lib;ILU.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /y "$(ProjectDir)DLLs\*.*" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,6 +97,7 @@
     <None Include="basic.frag" />
     <None Include="basic.vert" />
     <None Include="shiny.vert" />
+    <None Include="texture.frag" />
     <None Include="texture.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

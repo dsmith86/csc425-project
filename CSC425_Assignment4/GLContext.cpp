@@ -2,11 +2,15 @@
 #include "LoadShaders.h"
 #include <iostream>
 #include <math.h>
+#include <locale>
+#include <codecvt>
+#include <string>
 #include <glm.hpp>
 #include <mat4x4.hpp>
 #include <vec3.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+#include <IL/il.h>
 
 namespace GLContext {
 
@@ -106,6 +110,70 @@ namespace GLContext {
 
 			glGenBuffers(n, this->VBOs);
 
+			// Gen texture
+
+			GLuint tex;
+			glGenTextures(1, &tex);
+			glBindTexture(GL_TEXTURE_2D, tex);
+
+			// Load image
+
+			float pixels[] = {
+				0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+				1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f
+			};
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			GLfloat texCoords[] = {
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+				1, 0,
+				0, 1,
+				0, 0
+			};
+
+			// End load texture
+
+
 			for (int i = 0; i < n; i++)
 			{
 				int vertexCount = m[i].vertices.size();
@@ -113,10 +181,11 @@ namespace GLContext {
 
 				glBindVertexArray(this->VAOs[i]);
 				glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[i]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount), NULL, GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount + 72), NULL, GL_STATIC_DRAW);
 
 				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, &m[i].vertices.front());
 				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(GLfloat) * normalCount, &m[i].normals.front());
+				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount), sizeof(GLfloat) * 72, texCoords);
 
 				GLuint program = this->shaderPrograms[m[i].shader];
 				glUseProgram(program);
@@ -132,6 +201,11 @@ namespace GLContext {
 					glEnableVertexAttribArray(vNormal);
 					glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
 				}
+
+				GLuint vTexCoord = glGetAttribLocation(program, "texcoord");
+
+				glEnableVertexAttribArray(vTexCoord);
+				glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * (vertexCount + normalCount)));
 				
 
 				this->models[i] = m[i];
@@ -254,5 +328,48 @@ namespace GLContext {
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
 
 		return location < (GLuint)max_attribs;
+	}
+
+	// Courtesy of http://lazyfoo.net/tutorials/OpenGL/06_loading_a_texture/index.php
+	bool loadTextureFromFile(std::string path)
+	{
+		//Texture loading success
+		bool textureLoaded = false;
+
+		//Generate and set current image ID
+		ILuint imgID = 0;
+		ilGenImages(1, &imgID);
+		ilBindImage(imgID);
+
+		// Convert the UTF-8 string into a UTF-16 wstring
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring uPath = converter.from_bytes(path);
+
+		//Load image
+		ILboolean success = ilLoadImage(uPath.c_str());
+
+		//Image loaded successfully
+		if (success == IL_TRUE)
+		{
+			//Convert image to RGBA
+			success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+			if (success == IL_TRUE)
+			{
+				//Create texture from file pixels
+				//textureLoaded = loadTextureFromPixels32((GLuint*)ilGetData(), (GLuint)ilGetInteger(IL_IMAGE_WIDTH), (GLuint)ilGetInteger(IL_IMAGE_HEIGHT));
+			}
+
+			//Delete file from memory
+			ilDeleteImages(1, &imgID);
+		}
+
+		//Report error
+		if (!textureLoaded)
+		{
+			printf("Unable to load %s\n", path.c_str());
+		}
+
+		return textureLoaded;
 	}
 }
