@@ -26,13 +26,13 @@ int main(int argc, char *argv[])
 
 	modelBag models = modelBag();
 
-	arrange_in_circle(models, 12, 5);
+	arrange_in_circle(models, 12, 4);
 
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
-		glContext->initCamera({ 0.0, 10.0, -20.0 }, { 0.0, 0.0, 0.0 });
+		glContext->initCamera({ 0.0, 5.0, -15.0 }, { 0.0, 0.0, 0.0 });
 		glContext->initLight(0, 0, -0.5);
 		glContext->run();
 	}

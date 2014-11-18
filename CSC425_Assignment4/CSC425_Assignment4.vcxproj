@@ -51,17 +51,18 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opengl\DevIL\include;C:\opengl\glm\glm;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\opengl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\opengl\glm\glm;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;C:\opengl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\opengl\DevIL\lib;C:\Program Files (x86%)\Microsoft SDKs\Windows\v7.1A\Lib\x64;C:\opengl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut_static_vs2010_d.lib;glew_static_vs2010_d.lib;opengl32.lib;DevIL.lib;ILU.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files (x86%)\Microsoft SDKs\Windows\v7.1A\Lib\x64;C:\opengl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut_static_vs2010_d.lib;glew_static_vs2010_d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(ProjectDir)DLLs\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /d /y "$(ProjectDir)DLLs\*.*" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

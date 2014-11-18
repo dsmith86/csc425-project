@@ -10,7 +10,6 @@
 #include <vec3.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
-#include <IL/il.h>
 
 namespace GLContext {
 
@@ -328,48 +327,5 @@ namespace GLContext {
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
 
 		return location < (GLuint)max_attribs;
-	}
-
-	// Courtesy of http://lazyfoo.net/tutorials/OpenGL/06_loading_a_texture/index.php
-	bool loadTextureFromFile(std::string path)
-	{
-		//Texture loading success
-		bool textureLoaded = false;
-
-		//Generate and set current image ID
-		ILuint imgID = 0;
-		ilGenImages(1, &imgID);
-		ilBindImage(imgID);
-
-		// Convert the UTF-8 string into a UTF-16 wstring
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-		std::wstring uPath = converter.from_bytes(path);
-
-		//Load image
-		ILboolean success = ilLoadImage(uPath.c_str());
-
-		//Image loaded successfully
-		if (success == IL_TRUE)
-		{
-			//Convert image to RGBA
-			success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-			if (success == IL_TRUE)
-			{
-				//Create texture from file pixels
-				//textureLoaded = loadTextureFromPixels32((GLuint*)ilGetData(), (GLuint)ilGetInteger(IL_IMAGE_WIDTH), (GLuint)ilGetInteger(IL_IMAGE_HEIGHT));
-			}
-
-			//Delete file from memory
-			ilDeleteImages(1, &imgID);
-		}
-
-		//Report error
-		if (!textureLoaded)
-		{
-			printf("Unable to load %s\n", path.c_str());
-		}
-
-		return textureLoaded;
 	}
 }
