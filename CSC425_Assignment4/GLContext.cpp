@@ -118,10 +118,24 @@ namespace GLContext {
 			// Load image
 
 			float pixels[] = {
-				0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f
+				.59, .42, .29,
+				.47, .34, .23,
+				.73, .52, .36,
+				.59, .42, .29,
+				.59, .42, .29,
+				.47, .34, .23,
+				.47, .34, .23,
+				.73, .52, .36,
+				.47, .34, .23,
+				.59, .42, .29,
+				.47, .34, .23,
+				.47, .34, .23,
+				.35, .24, .16,
+				.35, .24, .16,
+				.47, .34, .23,
+				.59, .42, .29
 			};
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4, 4, 0, GL_RGB, GL_FLOAT, pixels);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -131,44 +145,23 @@ namespace GLContext {
 
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			GLfloat texCoords[] = {
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-				1, 0,
-				0, 1,
-				0, 0
-			};
+			GLfloat *texCoords = new GLfloat[72];
+
+			for (int i = 0; i < 6; i++)
+			{
+				texCoords[i * 12] = 1;
+				texCoords[i * 12 + 1] = 0;
+				texCoords[i * 12 + 2] = 1;
+				texCoords[i * 12 + 3] = 1;
+				texCoords[i * 12 + 4] = 0;
+				texCoords[i * 12 + 5] = 1;
+				texCoords[i * 12 + 6] = 1;
+				texCoords[i * 12 + 7] = 0;
+				texCoords[i * 12 + 8] = 0;
+				texCoords[i * 12 + 9] = 1;
+				texCoords[i * 12 + 10] = 0;
+				texCoords[i * 12 + 11] = 0;
+			}
 
 			// End load texture
 
