@@ -25,6 +25,10 @@ Currently, it has the following features:
 The world currently contains a collection of cubes (right now, 12 arranged in a circle) that can rotate freely in space.
 Each is mapped with a Minecraft-like dirt texture (albeit at a lower resolution).
 
+### Demonstration:
+
+![](http://fat.gfycat.com/EminentDependentKilldeer.gif)
+
 ### Future plans:
 * mouse and keyboard events to move around the scene
 * fancier lighting
