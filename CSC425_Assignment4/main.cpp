@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	modelBag models = modelBag();
 
 	//arrange_in_circle(models, 1000, 5);
-	arrange_in_cube(models, 10, 4);
+	arrange_in_cube(models, 15, 4);
 
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 1) &&
@@ -100,7 +100,7 @@ void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens)
 	float deltaY = (float)dimens / y * 2;
 	float deltaZ = (float)dimens / z * 2;
 
-	float cubeScale = min(1.0f, deltaX / 3);
+	float cubeScale = min(1.0f, deltaX / 1.5f);
 
 	cout << "scale: " << cubeScale << endl;
 
