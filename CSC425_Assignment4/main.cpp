@@ -15,6 +15,8 @@ void display(void);
 void reshape(int w, int h);
 
 void arrange_in_circle(modelBag &models, int count, float radius);
+void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens);
+void arrange_in_cube(modelBag &models, int count, int dimens);
 
 GLContext::GLContext *glContext;
 
@@ -31,7 +33,8 @@ int main(int argc, char *argv[])
 
 	modelBag models = modelBag();
 
-	arrange_in_circle(models, 1000, 5);
+	//arrange_in_circle(models, 1000, 5);
+	arrange_in_cube(models, 10, 4);
 
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 1) &&
@@ -83,5 +86,36 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 		float y = radius * sin(theta * i * RADIANS_PER_DEGREE);
 
 		models.push_back(Cube({ x, y, 0.0 }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, direction)->modelData());
+	}
+}
+
+void arrange_in_cube(modelBag &models, int count, int dimens)
+{
+	arrange_in_cube(models, count, count, count, dimens);
+}
+
+void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens)
+{
+	float deltaX = (float)dimens / x * 2;
+	float deltaY = (float)dimens / y * 2;
+	float deltaZ = (float)dimens / z * 2;
+
+	float cubeScale = min(1.0f, deltaX / 3);
+
+	cout << "scale: " << cubeScale << endl;
+
+	for (int i = 0; i < x; i++)
+	{
+		for (int j = 0; j < y; j++)
+		{
+			for (int k = 0; k < z; k++)
+			{
+				float xCoord = (i <= x / 2.0) ? -dimens + deltaX * i + deltaX / 2 : dimens - deltaX * (x - i) + deltaX / 2;
+				float yCoord = (j <= y / 2.0) ? -dimens + deltaY * j + deltaY / 2 : dimens - deltaY * (y - j) + deltaY / 2;
+				float zCoord = (k <= z / 2.0) ? -dimens + deltaZ * k + deltaZ / 2 : dimens - deltaZ * (z - k) + deltaZ / 2;
+
+				models.push_back(Cube({ xCoord, yCoord, zCoord }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+			}
+		}
 	}
 }
