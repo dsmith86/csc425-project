@@ -2,6 +2,7 @@
 #include "GLContext.h"
 #include "Cube.h"
 #include <math.h>
+#include <algorithm>
 
 #define RADIANS_PER_DEGREE 0.017453293
 
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
 
 	modelBag models = modelBag();
 
-	arrange_in_circle(models, 12, 4);
+	arrange_in_circle(models, 100, 5);
 
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 1) &&
@@ -60,15 +61,23 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 		return;
 	}
 
+	float theta = (360.0 / count);
+
+	// the chord length of the circular segment with endpoints being
+	// any two adjacent cubes
+	float chordLength = 2 * radius * sin(theta / 2 * RADIANS_PER_DEGREE);
+
+	float cubeScale = min(1.0f, chordLength / 2);
+
 	for (int i = 0; i < count; i++)
 	{
 		float direction = (i % 2 == 0) ? 0.1 : -0.1;
 
-		float theta = (360.0 / count) * i;
+		
 
-		float x = radius * cos(theta * RADIANS_PER_DEGREE);
-		float y = radius * sin(theta * RADIANS_PER_DEGREE);
+		float x = radius * cos(theta * i * RADIANS_PER_DEGREE);
+		float y = radius * sin(theta * i * RADIANS_PER_DEGREE);
 
-		models.push_back(Cube({ x, y, 0.0 }, { 1.0, 1.0, 1.0 }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, direction)->modelData());
+		models.push_back(Cube({ x, y, 0.0 }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, direction)->modelData());
 	}
 }

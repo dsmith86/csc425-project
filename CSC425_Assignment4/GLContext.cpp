@@ -1,7 +1,9 @@
 #include "GLContext.h"
 #include "LoadShaders.h"
+#include "wglext.h"
 #include <iostream>
 #include <math.h>
+#include <Windows.h>
 #include <locale>
 #include <codecvt>
 #include <string>
@@ -228,17 +230,6 @@ namespace GLContext {
 	{
 		if (this->success)
 		{
-			glutMainLoop();
-		}
-	}
-
-	void GLContext::render()
-	{
-		if (this->success)
-		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glClearColor(0.0, 0.0, 0.0, 1.0);
-
 			glm::mat4 proj = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
 			glm::mat4 view = glm::mat4() * glm::lookAt(this->camera->getPosition(), this->camera->getGaze(), glm::vec3(0.0, 1.0, 0.0));
 
@@ -250,55 +241,47 @@ namespace GLContext {
 				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
 
-				GLint colLoc = glGetUniformLocation(program, "uColor");
-				GLfloat color[4] = { m.color.x, m.color.y, m.color.z, 1.0 };
-				glUniform4fv(colLoc, 1, color);
-
-				GLint lightLoc = glGetUniformLocation(program, "LightPosition");
-				GLfloat light[4] = { this->light.x, this->light.y, this->light.z, 1.0 };
-				glUniform4fv(lightLoc, 1, light);
-
 				GLint projLoc = glGetUniformLocation(program, "projection");
 				GLint viewLoc = glGetUniformLocation(program, "view");
-				GLint modelLoc = glGetUniformLocation(program, "model");
-
-				int deltaTime = glutGet(GLUT_ELAPSED_TIME);
-				float theta = fmod(m.rotationTheta * deltaTime, 360);
-
-				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
-				glm::mat4 modelTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(m.position.x, m.position.y, m.position.z));
-				glm::mat4 modelRotation = glm::rotate(modelTranslate, theta, rotationTheta);
-				glm::mat4 mod = modelRotation;
 
 				glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 				glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+			}
+
+
+
+			glutMainLoop();
+		}
+	}
+
+	void GLContext::render()
+	{
+		if (this->success)
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+
+			int deltaTime = glutGet(GLUT_ELAPSED_TIME);
+
+			for (int i = 0; i < this->numVAOs; i++)
+			{
+				model m = this->models[i];
+
+				GLuint program = this->shaderPrograms[m.shader];
+				glUseProgram(program);
+				glBindVertexArray(this->VAOs[i]);
+
+				float theta = fmod(m.rotationTheta * deltaTime, 360);
+
+				glm::mat4 mod = glm::mat4(1.0f);
+				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
+
+				mod = glm::translate(mod, glm::vec3(m.position.x, m.position.y, m.position.z));
+				mod = glm::rotate(mod, theta, rotationTheta);
+
+				GLint modelLoc = glGetUniformLocation(program, "model");
+
 				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mod));
-
-				float r = m.color.x;
-				float g = m.color.y;
-				float b = m.color.z;
-				color4 light_ambient = glm::vec4(r, g, b, 1.0);
-				color4 light_diffuse = color4(1.0, 1.0, 1.0, 1.0);
-				color4 light_specular = color4(1.0, 1.0, 1.0, 1.0);
-
-				color4 material_ambient = color4(1.0, 0.0, 1.0, 1.0);
-				color4 material_diffuse = color4(1.0, 0.8, 0.0, 1.0);
-				color4 material_specular = color4(1.0, 0.8, 0.0, 1.0);
-				GLfloat material_shininess = this->shaderPrograms[m.shader];
-
-				color4 ambient_product = light_ambient * material_ambient;
-				color4 diffuse_product = light_diffuse * material_diffuse;
-				color4 specular_product = light_specular * material_specular;
-
-				GLfloat ambient[4] = { 0.1 * r, 0.1 * g, 0.1 * b, 1.0 };
-				GLfloat diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
-				GLfloat specular[4] = { 1.0, 1.0, 1.0, 1.0 };
-
-				glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, ambient);
-				glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, diffuse);
-				glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, specular);
-
-				glUniform1f(glGetUniformLocation(program, "Shininess"), m.shininess);
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}

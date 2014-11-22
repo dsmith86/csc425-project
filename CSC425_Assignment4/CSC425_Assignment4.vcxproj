@@ -93,6 +93,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="GLContext.h" />
+    <ClInclude Include="wglext.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.frag" />
