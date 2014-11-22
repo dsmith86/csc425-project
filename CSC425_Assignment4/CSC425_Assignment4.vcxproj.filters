@@ -16,6 +16,12 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{4b06c3b2-a69b-4f80-932b-f75cb20ce8d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Meshes">
+      <UniqueIdentifier>{6c2d8e18-85e0-45c9-a2fb-ff1b8675bebc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Meshes">
+      <UniqueIdentifier>{6f319295-d919-4e77-a7f5-5987b63af259}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\..\opengl\lib\LoadShaders.cpp">
@@ -33,6 +39,12 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InstancedMeshFactory.cpp">
+      <Filter>Source Files\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancedCubeFactory.cpp">
+      <Filter>Source Files\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLContext.h">
@@ -47,17 +59,14 @@
     <ClInclude Include="wglext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InstancedMeshFactory.h">
+      <Filter>Header Files\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancedCubeFactory.h">
+      <Filter>Header Files\Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="basic.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shiny.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="texture.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>

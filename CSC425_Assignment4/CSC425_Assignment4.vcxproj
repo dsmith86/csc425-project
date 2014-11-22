@@ -87,18 +87,19 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="GLContext.cpp" />
+    <ClCompile Include="InstancedCubeFactory.cpp" />
+    <ClCompile Include="InstancedMeshFactory.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="GLContext.h" />
+    <ClInclude Include="InstancedCubeFactory.h" />
+    <ClInclude Include="InstancedMeshFactory.h" />
     <ClInclude Include="wglext.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.frag" />
-    <None Include="basic.vert" />
-    <None Include="shiny.vert" />
     <None Include="texture.frag">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>

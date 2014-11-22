@@ -3,6 +3,7 @@
 #include "Cube.h"
 #include <math.h>
 #include <algorithm>
+#include "InstancedCubeFactory.h"
 
 #define RADIANS_PER_DEGREE 0.017453293
 
@@ -24,6 +25,9 @@ int main(int argc, char *argv[])
 	GLContext::material materials[] = {
 			{ "texture", "texture.vert", "texture.frag" }
 	};
+
+	InstancedCubeFactory cubeFactory = InstancedCubeFactory();
+	cubeFactory.init(glm::vec3(1.0, 1.0, 1.0), "dirt", "texture");
 
 	modelBag models = modelBag();
 
