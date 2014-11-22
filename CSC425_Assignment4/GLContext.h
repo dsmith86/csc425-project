@@ -3,6 +3,7 @@
 #include "vgl.h"
 #include "Camera.h"
 #include <vec3.hpp>
+#include <glm.hpp>
 
 namespace GLContext {
 
@@ -71,6 +72,9 @@ namespace GLContext {
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		float w;
 		float h;
+
+		glm::mat4 projectionTransform;
+		glm::mat4 viewTransform;
 	};
 
 }

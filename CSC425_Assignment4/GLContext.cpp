@@ -7,7 +7,6 @@
 #include <locale>
 #include <codecvt>
 #include <string>
-#include <glm.hpp>
 #include <mat4x4.hpp>
 #include <vec3.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -230,8 +229,8 @@ namespace GLContext {
 	{
 		if (this->success)
 		{
-			glm::mat4 proj = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
-			glm::mat4 view = glm::mat4() * glm::lookAt(this->camera->getPosition(), this->camera->getGaze(), glm::vec3(0.0, 1.0, 0.0));
+			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
+			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->getPosition(), this->camera->getGaze(), glm::vec3(0.0, 1.0, 0.0));
 
 			for (int i = 0; i < this->numVAOs; i++)
 			{
@@ -240,12 +239,6 @@ namespace GLContext {
 				GLuint program = this->shaderPrograms[m.shader];
 				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
-
-				GLint projLoc = glGetUniformLocation(program, "projection");
-				GLint viewLoc = glGetUniformLocation(program, "view");
-
-				glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-				glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 			}
 
 
@@ -263,6 +256,8 @@ namespace GLContext {
 
 			int deltaTime = glutGet(GLUT_ELAPSED_TIME);
 
+			glm::mat4 perspectiveTransform = this->projectionTransform * this->viewTransform;
+
 			for (int i = 0; i < this->numVAOs; i++)
 			{
 				model m = this->models[i];
@@ -273,15 +268,14 @@ namespace GLContext {
 
 				float theta = fmod(m.rotationTheta * deltaTime, 360);
 
-				glm::mat4 mod = glm::mat4(1.0f);
 				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
 
-				mod = glm::translate(mod, glm::vec3(m.position.x, m.position.y, m.position.z));
+				glm::mat4 mod = glm::translate(perspectiveTransform, glm::vec3(m.position.x, m.position.y, m.position.z));
 				mod = glm::rotate(mod, theta, rotationTheta);
 
-				GLint modelLoc = glGetUniformLocation(program, "model");
+				GLint modelViewProjectionLoc = glGetUniformLocation(program, "modelViewProjection");
 
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mod));
+				glUniformMatrix4fv(modelViewProjectionLoc, 1, GL_FALSE, glm::value_ptr(mod));
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}

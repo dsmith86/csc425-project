@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 	modelBag models = modelBag();
 
-	arrange_in_circle(models, 100, 5);
+	arrange_in_circle(models, 1000, 5);
 
 	if (glContext->initContext(argc, argv, display, reshape) &&
 		glContext->initShaders(materials, 1) &&
