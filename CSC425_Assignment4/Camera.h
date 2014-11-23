@@ -1,4 +1,5 @@
 #include <vec3.hpp>
+#include <glm.hpp>
 
 #pragma once
 class Camera
@@ -8,12 +9,15 @@ public:
 	Camera(glm::vec3 position, glm::vec3 gaze);
 	~Camera();
 	bool valid();
-	glm::vec3 getPosition();
-	glm::vec3 getGaze();
-	glm::vec3 getUp();
-private:
+	void pitch(float y);
+	void yaw(float x);
+	void translate(glm::vec3 direction);
 	glm::vec3 position;
 	glm::vec3 gaze;
 	glm::vec3 up;
+	glm::vec3 right;
+	glm::vec3 front;
+private:
+
 };
 

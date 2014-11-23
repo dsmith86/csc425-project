@@ -11,6 +11,8 @@ namespace GLContext {
 
 	typedef void(*displayFunc)(void);
 	typedef void(*reshapeFunc)(int w, int h);
+	typedef void(*passiveMouseFunc)(int x, int y);
+	typedef void(*keyboardFunc)(unsigned char key, int x, int y);
 
 	typedef enum {
 		UP, LEFT, FRONT
@@ -51,14 +53,16 @@ namespace GLContext {
 	public:
 		GLContext();
 		~GLContext();
-		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc);
+		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardFunc kFunc);
 		bool initShaders(const material s[], int n);
 		bool initModels(const model m[], int n);
-		void initCamera(vec3 position, vec3 gaze);
+		void initCamera(glm::vec3 position, glm::vec3 gaze);
 		void initLight(float x, float y, float z);
 		void run();
 		void render();
 		void reshape(int w, int h);
+		void rotateCamera(float x, float y);
+		void moveCamera(glm::vec3 direction);
 	private:
 		Camera *camera;
 		bool cameraInitialized;
@@ -72,6 +76,9 @@ namespace GLContext {
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		float w;
 		float h;
+		float xPrev;
+		float yPrev;
+		bool mouseMoved;
 
 		glm::mat4 projectionTransform;
 		glm::mat4 viewTransform;

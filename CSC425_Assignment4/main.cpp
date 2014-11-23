@@ -13,6 +13,8 @@ typedef vector<GLContext::model> modelBag;
 
 void display(void);
 void reshape(int w, int h);
+void mouseMoved(int x, int y);
+void keyPressed(unsigned char key, int x, int y);
 
 void arrange_in_circle(modelBag &models, int count, float radius);
 void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens);
@@ -34,13 +36,13 @@ int main(int argc, char *argv[])
 	modelBag models = modelBag();
 
 	//arrange_in_circle(models, 1000, 5);
-	arrange_in_cube(models, 15, 4);
+	arrange_in_cube(models, 5, 4);
 
-	if (glContext->initContext(argc, argv, display, reshape) &&
+	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, keyPressed) &&
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
-		glContext->initCamera({ 0.0, 5.0, -15.0 }, { 0.0, 0.0, 0.0 });
+		glContext->initCamera(glm::vec3(0.0, 0.0, -15.0), glm::vec3(0.0, 0.0, 0.0));
 		glContext->initLight(0, 0, -0.5);
 		glContext->run();
 	}
@@ -58,6 +60,30 @@ void display(void)
 void reshape(int w, int h)
 {
 	glContext->reshape(w, h);
+}
+
+void mouseMoved(int x, int y)
+{
+	glContext->rotateCamera(x, y);
+}
+
+void keyPressed(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+	case 'w':
+		glContext->moveCamera(glm::vec3(0.0, 0.0, 1.0));
+		break;
+	case 'a':
+		glContext->moveCamera(glm::vec3(1.0, 0.0, 0.0));
+		break;
+	case 's':
+		glContext->moveCamera(glm::vec3(0.0, 0.0, -1.0));
+		break;
+	case 'd':
+		glContext->moveCamera(glm::vec3(-1.0, 0.0, 0.0));
+		break;
+	}
 }
 
 void arrange_in_circle(modelBag &models, int count, float radius)

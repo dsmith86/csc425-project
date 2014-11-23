@@ -38,7 +38,7 @@ namespace GLContext {
 	}
 
 
-	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc)
+	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardFunc kFunc)
 	{
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -51,6 +51,8 @@ namespace GLContext {
 
 		glutIdleFunc(dFunc);
 		glutReshapeFunc(rFunc);
+		glutPassiveMotionFunc(mFunc);
+		glutKeyboardFunc(kFunc);
 
 		if (glewInit()) {
 			std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
@@ -58,15 +60,8 @@ namespace GLContext {
 			return false;
 		}
 
-		vec3 cameraPosition;
-		cameraPosition.x = 0;
-		cameraPosition.y = 0;
-		cameraPosition.z = -3;
-		vec3 cameraGaze = { 0.0, 0.0, 0.0 };
-
-		initCamera(cameraPosition, cameraGaze);
-
 		this->success = true;
+		this->mouseMoved = false;
 		return true;
 	}
 
@@ -209,13 +204,13 @@ namespace GLContext {
 		return false;
 	}
 
-	void GLContext::initCamera(vec3 position, vec3 gaze)
+	void GLContext::initCamera(glm::vec3 position, glm::vec3 gaze)
 	{
 		if (!this->cameraInitialized)
 		{
 			delete camera;
 		}
-		this->camera = new Camera(glm::vec3(position.x, position.y, position.z), glm::vec3(gaze.x, gaze.y, gaze.z));
+		this->camera = new Camera(position, gaze);
 		this->cameraInitialized = true;
 
 	}
@@ -230,18 +225,7 @@ namespace GLContext {
 		if (this->success)
 		{
 			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
-			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->getPosition(), this->camera->getGaze(), glm::vec3(0.0, 1.0, 0.0));
-
-			for (int i = 0; i < this->numVAOs; i++)
-			{
-				model m = this->models[i];
-
-				GLuint program = this->shaderPrograms[m.shader];
-				glUseProgram(program);
-				glBindVertexArray(this->VAOs[i]);
-			}
-
-
+			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->position, this->camera->gaze, glm::vec3(0.0, 1.0, 0.0));
 
 			glutMainLoop();
 		}
@@ -289,6 +273,40 @@ namespace GLContext {
 	{
 		this->w = (float)w;
 		this->h = (float)h;
+	}
+
+	void GLContext::rotateCamera(float x, float y)
+	{
+		if (!this->mouseMoved)
+		{
+			this->xPrev = x;
+			this->yPrev = y;
+			this->mouseMoved = true;
+		}
+
+		float deltaX = x - this->xPrev;
+		float deltaY = y - this->yPrev;
+
+		deltaX /= 10;
+		deltaY /= 10;
+
+
+
+		this->camera->pitch(-deltaY);
+		this->camera->yaw(deltaX);
+
+
+		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
+
+		this->xPrev = x;
+		this->yPrev = y;
+	}
+
+	void GLContext::moveCamera(glm::vec3 direction)
+	{
+		this->camera->translate(direction);
+
+		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
 	}
 
 	bool validAttribLocation(GLuint location)
