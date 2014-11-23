@@ -2,6 +2,7 @@
 #include <vector>
 #include "vgl.h"
 #include "Camera.h"
+#include "InstancedMeshFactory.h"
 #include <vec3.hpp>
 #include <glm.hpp>
 
@@ -53,7 +54,7 @@ namespace GLContext {
 		~GLContext();
 		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc);
 		bool initShaders(const material s[], int n);
-		bool initModels(const model m[], int n);
+		bool initModels(const std::vector<InstancedMeshFactory> m);
 		void initCamera(vec3 position, vec3 gaze);
 		void initLight(float x, float y, float z);
 		void run();
@@ -68,7 +69,7 @@ namespace GLContext {
 		size_t numVBOs;
 		GLuint *VAOs;
 		GLuint *VBOs;
-		model *models;
+		InstancedMeshFactory *meshes;
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		float w;
 		float h;

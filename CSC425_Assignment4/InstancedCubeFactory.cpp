@@ -30,7 +30,7 @@ void InstancedCubeFactory::init(glm::vec3 scale, const char *texture, const char
 		L, D, B, R, U, B, R, D, B
 	};
 
-	texCoords = new GLfloat[CUBE_VERTEX_COUNT * CUBE_TEXTCOORD_DIMENS];
+	texCoords = new GLfloat[CUBE_VERTEX_COUNT * TEXCOORD_DIMENS];
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -49,9 +49,12 @@ void InstancedCubeFactory::init(glm::vec3 scale, const char *texture, const char
 	}
 
 	this->vertices->assign(vertices, vertices + CUBE_VERTEX_COUNT * MESH_VECTOR_SIZE);
-	this->texCoords->assign(texCoords, texCoords + CUBE_VERTEX_COUNT * CUBE_TEXTCOORD_DIMENS);
+	this->texCoords->assign(texCoords, texCoords + CUBE_VERTEX_COUNT * TEXCOORD_DIMENS);
 
 	this->renderType = GL_TRIANGLES;
 
 	delete texCoords;
 }
+
+
+

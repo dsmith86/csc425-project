@@ -33,7 +33,7 @@ namespace GLContext {
 			glDeleteBuffers(this->numVBOs, this->VBOs);
 			delete this->VAOs;
 			delete this->VBOs;
-			delete this->models;
+			delete this->meshes;
 		}
 	}
 
@@ -94,21 +94,18 @@ namespace GLContext {
 		return false;
 	}
 
-	bool GLContext::initModels(const model m[], int n)
+	bool GLContext::initModels(const std::vector<InstancedMeshFactory> m)
 	{
 		if (this->success)
 		{
-
-
-			this->numVAOs = n;
-			this->numVBOs = n;
-			this->VAOs = new GLuint[n];
-			this->VBOs = new GLuint[n];
-			this->models = new model[n];
+			this->numVAOs = m.size();
+			this->VAOs = new GLuint[this->numVAOs];
+			this->numVBOs = 1;
+			this->VBOs = new GLuint[this->numVBOs];
+			this->meshes = new InstancedMeshFactory[this->numVAOs];
 
 			glGenVertexArrays(this->numVAOs, this->VAOs);
-
-			glGenBuffers(n, this->VBOs);
+			glGenBuffers(this->numVBOs, this->VBOs);
 
 			// Gen texture
 
@@ -167,41 +164,50 @@ namespace GLContext {
 			// End load texture
 
 
-			for (int i = 0; i < n; i++)
+			for (int i = 0; i < this->numVAOs; i++)
 			{
-				int vertexCount = m[i].vertices.size();
-				int normalCount = m[i].normals.size();
+				this->meshes[i] = m[i];
 
 				glBindVertexArray(this->VAOs[i]);
-				glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[i]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount + 72), NULL, GL_STATIC_DRAW);
+				glBindBuffer(GL_ARRAY_BUFFER, this->VBOs[0]);
 
-				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, &m[i].vertices.front());
-				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(GLfloat) * normalCount, &m[i].normals.front());
-				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount), sizeof(GLfloat) * 72, texCoords);
+				std::size_t offset = 0;
 
-				GLuint program = this->shaderPrograms[m[i].shader];
+				std::size_t vertexDataByteSize = this->meshes[i].vertexDataByteSize();
+				std::size_t instanceDataByteSize = this->meshes[i].instanceDataByteSize();
+				std::size_t vectorSize = this->meshes[i].vectorSize();
+				std::size_t texDimens = this->meshes[i].texDimens();
+
+				GLuint program = this->shaderPrograms[this->meshes[i].material];
 				glUseProgram(program);
 
+				glBufferData(GL_ARRAY_BUFFER, vertexDataByteSize + instanceDataByteSize, NULL, GL_STATIC_DRAW);
+
+				glBufferSubData(GL_ARRAY_BUFFER, offset, this->meshes[i].verticesByteSize(), &this->meshes[i].vertices->front());
 				GLuint vPosition = glGetAttribLocation(program, "vPosition");
 				glEnableVertexAttribArray(vPosition);
-				glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+				glVertexAttribPointer(vPosition, vectorSize, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(offset));
 
-				GLuint vNormal = glGetAttribLocation(program, "vNormal");
+				offset += this->meshes[i].verticesByteSize();
 
-				if (validAttribLocation(vNormal))
-				{
-					glEnableVertexAttribArray(vNormal);
-					glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * vertexCount));
-				}
-
-				GLuint vTexCoord = glGetAttribLocation(program, "texcoord");
-
+				glBufferSubData(GL_ARRAY_BUFFER, offset, this->meshes[i].texCoordByteSize(), &this->meshes[i].texCoords->front());
+				GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
 				glEnableVertexAttribArray(vTexCoord);
-				glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(GLfloat) * (vertexCount + normalCount)));
-				
+				glVertexAttribPointer(vTexCoord, texDimens, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(offset));
 
-				this->models[i] = m[i];
+				offset += this->meshes[i].texCoordByteSize();
+
+				glBufferSubData(GL_ARRAY_BUFFER, offset, this->meshes[i].instanceOffsetByteSize(), &this->meshes[i].instanceOffset->front());
+				GLuint iOffset = glGetAttribLocation(program, "iOffset");
+				glEnableVertexAttribArray(iOffset);
+				glVertexAttribPointer(iOffset, vectorSize, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(offset));
+
+				offset += this->meshes[i].instanceOffsetByteSize();
+
+				glBufferSubData(GL_ARRAY_BUFFER, offset, this->meshes[i].instanceRotationByteSize(), &this->meshes[i].instanceRotation->front());
+				GLuint iRotation = glGetAttribLocation(program, "iRotation");
+				glEnableVertexAttribArray(iRotation);
+				glVertexAttribPointer(iRotation, vectorSize, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(offset));
 			}
 
 			return true;
@@ -232,17 +238,6 @@ namespace GLContext {
 			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
 			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->getPosition(), this->camera->getGaze(), glm::vec3(0.0, 1.0, 0.0));
 
-			for (int i = 0; i < this->numVAOs; i++)
-			{
-				model m = this->models[i];
-
-				GLuint program = this->shaderPrograms[m.shader];
-				glUseProgram(program);
-				glBindVertexArray(this->VAOs[i]);
-			}
-
-
-
 			glutMainLoop();
 		}
 	}
@@ -260,24 +255,16 @@ namespace GLContext {
 
 			for (int i = 0; i < this->numVAOs; i++)
 			{
-				model m = this->models[i];
-
-				GLuint program = this->shaderPrograms[m.shader];
-				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
 
-				float theta = fmod(m.rotationTheta * deltaTime, 360);
+				GLuint program = this->shaderPrograms[this->meshes[i].material];
+				glUseProgram(program);
 
-				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
+				GLint perspectiveTransformLoc = glGetUniformLocation(program, "perspectiveTransform");
 
-				glm::mat4 mod = glm::translate(perspectiveTransform, glm::vec3(m.position.x, m.position.y, m.position.z));
-				mod = glm::rotate(mod, theta, rotationTheta);
+				glUniformMatrix4fv(perspectiveTransformLoc, 1, GL_FALSE, glm::value_ptr(perspectiveTransform));
 
-				GLint modelViewProjectionLoc = glGetUniformLocation(program, "modelViewProjection");
-
-				glUniformMatrix4fv(modelViewProjectionLoc, 1, GL_FALSE, glm::value_ptr(mod));
-
-				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, this->meshes[i].vertices->size(), this->meshes[i].numInstances());
 			}
 
 			glFlush();
