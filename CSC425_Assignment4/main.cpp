@@ -64,7 +64,7 @@ void reshape(int w, int h)
 
 void mouseMoved(int x, int y)
 {
-	glContext->rotateCamera(x, y);
+	glContext->rotateCamera(x, y, 0.1);
 }
 
 void keyPressed(unsigned char key, int x, int y)
@@ -72,16 +72,19 @@ void keyPressed(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 'w':
-		glContext->moveCamera(glm::vec3(0.0, 0.0, 1.0));
+		glContext->moveCamera(Camera::DIRECTION::FORWARD);
 		break;
 	case 'a':
-		glContext->moveCamera(glm::vec3(1.0, 0.0, 0.0));
+		glContext->moveCamera(Camera::DIRECTION::LEFT);
 		break;
 	case 's':
-		glContext->moveCamera(glm::vec3(0.0, 0.0, -1.0));
+		glContext->moveCamera(Camera::DIRECTION::BACK);
 		break;
 	case 'd':
-		glContext->moveCamera(glm::vec3(-1.0, 0.0, 0.0));
+		glContext->moveCamera(Camera::DIRECTION::RIGHT);
+		break;
+	case 'q':
+		glContext->quit();
 		break;
 	}
 }

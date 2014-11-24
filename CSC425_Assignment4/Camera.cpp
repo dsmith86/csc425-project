@@ -38,13 +38,35 @@ void Camera::pitch(float y)
 
 void Camera::yaw(float x)
 {
-	this->right = glm::rotate(this->right, -x, this->up);
-	this->front = glm::rotate(this->front, -x, this->up);
+	this->right = glm::rotate(this->right, x, this->up);
+	this->front = glm::rotate(this->front, x, this->up);
 	this->gaze = this->position + this->front;
 }
 
-void Camera::translate(glm::vec3 direction)
+void Camera::translate(DIRECTION direction)
 {
-	this->position = this->position + direction;
-	this->gaze = this->gaze + direction;
+	glm::vec3 directionVector;
+	float smoothing = 0.1;
+
+	switch (direction)
+	{
+	case Camera::FORWARD:
+		directionVector = this->front;
+		break;
+	case Camera::BACK:
+		directionVector = -this->front;
+		break;
+	case Camera::LEFT:
+		directionVector = -this->right;
+		break;
+	case Camera::RIGHT:
+		directionVector = this->right;
+		break;
+	default:
+		directionVector = glm::vec3(0.0f);
+		break;
+	}
+
+	this->position = this->position + directionVector * smoothing;
+	this->gaze = this->gaze + directionVector * smoothing;
 }

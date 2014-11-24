@@ -227,6 +227,8 @@ namespace GLContext {
 			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
 			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->position, this->camera->gaze, glm::vec3(0.0, 1.0, 0.0));
 
+			glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
+
 			glutMainLoop();
 		}
 	}
@@ -266,7 +268,14 @@ namespace GLContext {
 
 			glFlush();
 			glutSwapBuffers();
+
+			glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
 		}
+	}
+
+	void GLContext::quit()
+	{
+		glutLeaveMainLoop();
 	}
 
 	void GLContext::reshape(int w, int h)
@@ -275,34 +284,27 @@ namespace GLContext {
 		this->h = (float)h;
 	}
 
-	void GLContext::rotateCamera(float x, float y)
+	void GLContext::rotateCamera(float x, float y, float smoothing)
 	{
-		if (!this->mouseMoved)
-		{
-			this->xPrev = x;
-			this->yPrev = y;
-			this->mouseMoved = true;
-		}
+		
 
-		float deltaX = x - this->xPrev;
-		float deltaY = y - this->yPrev;
+		float midX = glutGet(GLUT_WINDOW_WIDTH) / 2.0;
+		float midY = glutGet(GLUT_WINDOW_HEIGHT) / 2.0;
 
-		deltaX /= 10;
-		deltaY /= 10;
+		float deltaX = midX - x;
+		float deltaY = midY - y;
 
+		deltaX *= smoothing;
+		deltaY *= smoothing;
 
-
-		this->camera->pitch(-deltaY);
+		this->camera->pitch(deltaY);
 		this->camera->yaw(deltaX);
 
 
 		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
-
-		this->xPrev = x;
-		this->yPrev = y;
 	}
 
-	void GLContext::moveCamera(glm::vec3 direction)
+	void GLContext::moveCamera(Camera::DIRECTION direction)
 	{
 		this->camera->translate(direction);
 

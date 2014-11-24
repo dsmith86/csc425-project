@@ -60,9 +60,10 @@ namespace GLContext {
 		void initLight(float x, float y, float z);
 		void run();
 		void render();
+		void quit();
 		void reshape(int w, int h);
-		void rotateCamera(float x, float y);
-		void moveCamera(glm::vec3 direction);
+		void rotateCamera(float x, float y, float smoothing);
+		void moveCamera(Camera::DIRECTION direction);
 	private:
 		Camera *camera;
 		bool cameraInitialized;
@@ -76,8 +77,6 @@ namespace GLContext {
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		float w;
 		float h;
-		float xPrev;
-		float yPrev;
 		bool mouseMoved;
 
 		glm::mat4 projectionTransform;
