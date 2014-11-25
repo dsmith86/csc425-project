@@ -3,8 +3,12 @@
 #include "vgl.h"
 #include "Camera.h"
 #include "KeyBuffer.h"
+#include "PhysicsModel.h"
 #include <vec3.hpp>
 #include <glm.hpp>
+
+#define JUMP_IMPULSE 50000.0f
+#define HEIGHT_FROM_GROUND 1
 
 namespace GLContext {
 
@@ -70,11 +74,14 @@ namespace GLContext {
 		void moveCamera(Camera::DIRECTION direction);
 	private:
 		void processKeyboardEvents();
+		void processPhysics(float deltaTime);
 		Camera *camera;
 		KeyBuffer *keyBuffer;
+		PhysicsModel *physicsModel;
 		bool cameraInitialized;
 		vec3 light;
 		bool success;
+		int lastTime;
 		size_t numVAOs;
 		size_t numVBOs;
 		GLuint *VAOs;

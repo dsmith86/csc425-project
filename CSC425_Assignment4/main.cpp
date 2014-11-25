@@ -18,8 +18,8 @@ void keyPressed(unsigned char key, int x, int y);
 void keyReleased(unsigned char key, int x, int y);
 
 void arrange_in_circle(modelBag &models, int count, float radius);
-void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens);
-void arrange_in_cube(modelBag &models, int count, int dimens);
+void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yOffset);
+void arrange_in_cube(modelBag &models, int count, int dimens, float yOffset);
 
 GLContext::GLContext *glContext;
 
@@ -37,13 +37,13 @@ int main(int argc, char *argv[])
 	modelBag models = modelBag();
 
 	//arrange_in_circle(models, 1000, 5);
-	arrange_in_cube(models, 5, 4);
+	arrange_in_cube(models, 5, 4, HEIGHT_FROM_GROUND);
 
 	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, keyPressed, keyReleased) &&
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
-		glContext->initCamera(glm::vec3(0.0, 0.0, -15.0), glm::vec3(0.0, 0.0, 0.0));
+		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));
 		glContext->initLight(0, 0, -0.5);
 		glContext->run();
 	}
@@ -107,12 +107,12 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 	}
 }
 
-void arrange_in_cube(modelBag &models, int count, int dimens)
+void arrange_in_cube(modelBag &models, int count, int dimens, float yOffset)
 {
-	arrange_in_cube(models, count, count, count, dimens);
+	arrange_in_cube(models, count, count, count, dimens, yOffset);
 }
 
-void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens)
+void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yOffset)
 {
 	float deltaX = (float)dimens / x * 2;
 	float deltaY = (float)dimens / y * 2;
@@ -132,7 +132,8 @@ void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens)
 				float yCoord = (j <= y / 2.0) ? -dimens + deltaY * j + deltaY / 2 : dimens - deltaY * (y - j) + deltaY / 2;
 				float zCoord = (k <= z / 2.0) ? -dimens + deltaZ * k + deltaZ / 2 : dimens - deltaZ * (z - k) + deltaZ / 2;
 
-				models.push_back(Cube({ xCoord, yCoord, zCoord }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+				// I'm offsetting the yCoord to account for the ground plane
+				models.push_back(Cube({ xCoord, yCoord + yOffset, zCoord }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 			}
 		}
 	}

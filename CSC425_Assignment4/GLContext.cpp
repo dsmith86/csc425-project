@@ -35,6 +35,9 @@ namespace GLContext {
 			delete this->VBOs;
 			delete this->models;
 		}
+
+		delete this->keyBuffer;
+		delete this->physicsModel;
 	}
 
 
@@ -62,6 +65,7 @@ namespace GLContext {
 		}
 
 		this->keyBuffer = new KeyBuffer();
+		this->physicsModel = new PhysicsModel(9.81, 100.0);
 
 		this->success = true;
 		this->mouseMoved = false;
@@ -227,7 +231,9 @@ namespace GLContext {
 	{
 		if (this->success)
 		{
-			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 100.0f);
+			this->lastTime = glutGet(GLUT_ELAPSED_TIME);
+
+			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 1000.0f);
 			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->position, this->camera->gaze, glm::vec3(0.0, 1.0, 0.0));
 
 			glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
@@ -240,12 +246,16 @@ namespace GLContext {
 	{
 		if (this->success)
 		{
+			int currentTime = glutGet(GLUT_ELAPSED_TIME);
+			int deltaTime = currentTime - this->lastTime;
+			this->lastTime = currentTime;
+
 			processKeyboardEvents();
+			processPhysics(deltaTime);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 
-			int deltaTime = glutGet(GLUT_ELAPSED_TIME);
 
 			glm::mat4 perspectiveTransform = this->projectionTransform * this->viewTransform;
 
@@ -257,7 +267,7 @@ namespace GLContext {
 				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
 
-				float theta = fmod(m.rotationTheta * deltaTime, 360);
+				float theta = fmod(m.rotationTheta * currentTime, 360);
 
 				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
 
@@ -274,7 +284,10 @@ namespace GLContext {
 			glFlush();
 			glutSwapBuffers();
 
-			glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
+			if (this->camera->cursorActive)
+			{
+				glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
+			}
 		}
 	}
 
@@ -291,7 +304,10 @@ namespace GLContext {
 
 	void GLContext::rotateCamera(float x, float y, float smoothing)
 	{
-		
+		if (!this->camera->cursorActive)
+		{
+			return;
+		}
 
 		float midX = glutGet(GLUT_WINDOW_WIDTH) / 2.0;
 		float midY = glutGet(GLUT_WINDOW_HEIGHT) / 2.0;
@@ -324,6 +340,14 @@ namespace GLContext {
 		{
 			glutLeaveMainLoop();
 		}
+		if (key == 'c')
+		{
+			this->camera->cursorActive = !this->camera->cursorActive;
+		}
+		if (key == ' ')
+		{
+			this->physicsModel->jump(JUMP_IMPULSE);
+		}
 	}
 
 	void GLContext::keyReleased(unsigned char key)
@@ -337,18 +361,48 @@ namespace GLContext {
 		{
 			this->camera->translate(Camera::DIRECTION::FORWARD);
 		}
+		if (this->keyBuffer->isSet('W'))
+		{
+			//this->camera->translate(Camera::DIRECTION::FORWARD, 0.25f);
+		}
 		if (this->keyBuffer->isSet('a'))
 		{
 			this->camera->translate(Camera::DIRECTION::LEFT);
+		}
+		if (this->keyBuffer->isSet('A'))
+		{
+			//this->camera->translate(Camera::DIRECTION::LEFT, 0.25f);
 		}
 		if (this->keyBuffer->isSet('s'))
 		{
 			this->camera->translate(Camera::DIRECTION::BACK);
 		}
+		if (this->keyBuffer->isSet('S'))
+		{
+			//this->camera->translate(Camera::DIRECTION::BACK, 0.25f);
+		}
 		if (this->keyBuffer->isSet('d'))
 		{
 			this->camera->translate(Camera::DIRECTION::RIGHT);
 		}
+		if (this->keyBuffer->isSet('D'))
+		{
+			//this->camera->translate(Camera::DIRECTION::RIGHT, 0.25f);
+		}
+	}
+
+	void GLContext::processPhysics(float deltaTime)
+	{
+		if (this->camera->position.y < HEIGHT_FROM_GROUND)
+		{
+			this->camera->position.y = HEIGHT_FROM_GROUND;
+			this->physicsModel->contactedGround();
+			return;
+		}
+
+		this->camera->translate(glm::vec3(0.0, 1.0, 0.0), this->physicsModel->deltaY(deltaTime));
+
+
 	}
 
 	bool validAttribLocation(GLuint location)

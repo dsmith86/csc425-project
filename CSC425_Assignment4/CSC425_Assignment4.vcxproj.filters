@@ -48,6 +48,9 @@
     <ClCompile Include="KeyBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLContext.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files\Meshes</Filter>
     </ClInclude>
     <ClInclude Include="KeyBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

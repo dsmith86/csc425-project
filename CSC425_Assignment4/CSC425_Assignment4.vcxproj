@@ -91,6 +91,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClCompile Include="InstancedMeshFactory.cpp" />
     <ClCompile Include="KeyBuffer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -99,6 +100,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClInclude Include="InstancedCubeFactory.h" />
     <ClInclude Include="InstancedMeshFactory.h" />
     <ClInclude Include="KeyBuffer.h" />
+    <ClInclude Include="PhysicsModel.h" />
     <ClInclude Include="wglext.h" />
   </ItemGroup>
   <ItemGroup>

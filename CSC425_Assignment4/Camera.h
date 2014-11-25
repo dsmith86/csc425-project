@@ -15,12 +15,14 @@ public:
 	void setSmoothing(float smoothing);
 	void pitch(float y);
 	void yaw(float x);
-	void translate(DIRECTION direction);
+	void translate(glm::vec3 direction, float userSmoothing = 1.0f);
+	void translate(DIRECTION direction, float userSmoothing = 1.0f);
 	glm::vec3 position;
 	glm::vec3 gaze;
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 front;
+	bool cursorActive;
 private:
 	float smoothing;
 };

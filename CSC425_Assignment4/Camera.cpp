@@ -8,6 +8,7 @@ Camera::Camera()
 	this->gaze = glm::vec3(0.0, 0.0, 0.0);
 	this->up = glm::vec3(0.0, 1.0, 0.0);
 	this->smoothing = DEFAULT_SMOOTHING;
+	this->cursorActive = true;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 gaze)
@@ -18,6 +19,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 gaze)
 	this->up = glm::normalize(glm::cross(glm::cross(this->front, glm::vec3(0.0, 1.0, 0.0)), this->front));
 	this->right = glm::normalize(glm::cross(this->front, this->up));
 	this->smoothing = DEFAULT_SMOOTHING;
+	this->cursorActive = true;
 }
 
 Camera::~Camera()
@@ -56,7 +58,13 @@ void Camera::yaw(float x)
 	this->up = glm::cross(this->right, this->front);
 }
 
-void Camera::translate(DIRECTION direction)
+void Camera::translate(glm::vec3 direction, float userSmoothing)
+{
+	this->position = this->position + direction * this->smoothing * userSmoothing;
+	this->gaze = this->gaze + direction * this->smoothing * userSmoothing;
+}
+
+void Camera::translate(DIRECTION direction, float userSmoothing)
 {
 	glm::vec3 directionVector;
 
@@ -81,6 +89,5 @@ void Camera::translate(DIRECTION direction)
 
 	directionVector = glm::normalize(glm::vec3(directionVector.x, 0.0, directionVector.z));
 
-	this->position = this->position + directionVector * this->smoothing;
-	this->gaze = this->gaze + directionVector * this->smoothing;
+	translate(directionVector, userSmoothing);
 }
