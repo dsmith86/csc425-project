@@ -38,7 +38,7 @@ namespace GLContext {
 	}
 
 
-	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardFunc kFunc)
+	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc)
 	{
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -52,13 +52,16 @@ namespace GLContext {
 		glutIdleFunc(dFunc);
 		glutReshapeFunc(rFunc);
 		glutPassiveMotionFunc(mFunc);
-		glutKeyboardFunc(kFunc);
+		glutKeyboardFunc(kdFunc);
+		glutKeyboardUpFunc(kuFunc);
 
 		if (glewInit()) {
 			std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
 			this->success = false;
 			return false;
 		}
+
+		this->keyBuffer = new KeyBuffer();
 
 		this->success = true;
 		this->mouseMoved = false;
@@ -237,6 +240,8 @@ namespace GLContext {
 	{
 		if (this->success)
 		{
+			processKeyboardEvents();
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -309,6 +314,41 @@ namespace GLContext {
 		this->camera->translate(direction);
 
 		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
+	}
+
+	void GLContext::keyPressed(unsigned char key)
+	{
+		this->keyBuffer->set(key);
+
+		if (key == 'q')
+		{
+			glutLeaveMainLoop();
+		}
+	}
+
+	void GLContext::keyReleased(unsigned char key)
+	{
+		this->keyBuffer->unset(key);
+	}
+
+	void GLContext::processKeyboardEvents()
+	{
+		if (this->keyBuffer->isSet('w'))
+		{
+			this->camera->translate(Camera::DIRECTION::FORWARD);
+		}
+		if (this->keyBuffer->isSet('a'))
+		{
+			this->camera->translate(Camera::DIRECTION::LEFT);
+		}
+		if (this->keyBuffer->isSet('s'))
+		{
+			this->camera->translate(Camera::DIRECTION::BACK);
+		}
+		if (this->keyBuffer->isSet('d'))
+		{
+			this->camera->translate(Camera::DIRECTION::RIGHT);
+		}
 	}
 
 	bool validAttribLocation(GLuint location)

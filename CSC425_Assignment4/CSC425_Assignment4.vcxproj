@@ -89,6 +89,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="InstancedCubeFactory.cpp" />
     <ClCompile Include="InstancedMeshFactory.cpp" />
+    <ClCompile Include="KeyBuffer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClInclude Include="GLContext.h" />
     <ClInclude Include="InstancedCubeFactory.h" />
     <ClInclude Include="InstancedMeshFactory.h" />
+    <ClInclude Include="KeyBuffer.h" />
     <ClInclude Include="wglext.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 #include <vec3.hpp>
 #include <glm.hpp>
 
-
+#define DEFAULT_SMOOTHING 0.4
 
 #pragma once
 class Camera
@@ -12,6 +12,7 @@ public:
 	~Camera();
 	enum DIRECTION{ FORWARD, BACK, LEFT, RIGHT };
 	bool valid();
+	void setSmoothing(float smoothing);
 	void pitch(float y);
 	void yaw(float x);
 	void translate(DIRECTION direction);
@@ -21,6 +22,6 @@ public:
 	glm::vec3 right;
 	glm::vec3 front;
 private:
-
+	float smoothing;
 };
 

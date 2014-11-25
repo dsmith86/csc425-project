@@ -7,6 +7,7 @@ Camera::Camera()
 	this->position = glm::vec3(0.0, 0.0, -1.0);
 	this->gaze = glm::vec3(0.0, 0.0, 0.0);
 	this->up = glm::vec3(0.0, 1.0, 0.0);
+	this->smoothing = DEFAULT_SMOOTHING;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 gaze)
@@ -16,7 +17,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 gaze)
 	this->front = this->gaze;
 	this->up = glm::normalize(glm::cross(glm::cross(this->front, glm::vec3(0.0, 1.0, 0.0)), this->front));
 	this->right = glm::normalize(glm::cross(this->front, this->up));
-
+	this->smoothing = DEFAULT_SMOOTHING;
 }
 
 Camera::~Camera()
@@ -28,12 +29,20 @@ bool Camera::valid()
 	return (&this->position && &this->gaze && &this->up);
 }
 
+void Camera::setSmoothing(float smoothing)
+{
+	this->smoothing = smoothing;
+}
 
 void Camera::pitch(float y)
 {
 	this->up = glm::normalize(glm::rotate(this->up, y, this->right));
 	this->front = glm::normalize(glm::rotate(this->front, y, this->right));
 	this->gaze = this->position + this->front;
+
+	// correct up vector's tilt
+	this->right.y = 0;
+	this->up = glm::cross(this->right, this->front);
 }
 
 void Camera::yaw(float x)
@@ -41,12 +50,15 @@ void Camera::yaw(float x)
 	this->right = glm::rotate(this->right, x, this->up);
 	this->front = glm::rotate(this->front, x, this->up);
 	this->gaze = this->position + this->front;
+
+	// correct up vector's tilt
+	this->right.y = 0;
+	this->up = glm::cross(this->right, this->front);
 }
 
 void Camera::translate(DIRECTION direction)
 {
 	glm::vec3 directionVector;
-	float smoothing = 0.1;
 
 	switch (direction)
 	{
@@ -67,6 +79,8 @@ void Camera::translate(DIRECTION direction)
 		break;
 	}
 
-	this->position = this->position + directionVector * smoothing;
-	this->gaze = this->gaze + directionVector * smoothing;
+	directionVector = glm::normalize(glm::vec3(directionVector.x, 0.0, directionVector.z));
+
+	this->position = this->position + directionVector * this->smoothing;
+	this->gaze = this->gaze + directionVector * this->smoothing;
 }
