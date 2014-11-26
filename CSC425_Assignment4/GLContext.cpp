@@ -41,7 +41,7 @@ namespace GLContext {
 	}
 
 
-	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc)
+	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc, keyboardSpecialFunc ksFunc, keyboardSpecialUpFunc ksuFunc)
 	{
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -57,6 +57,8 @@ namespace GLContext {
 		glutPassiveMotionFunc(mFunc);
 		glutKeyboardFunc(kdFunc);
 		glutKeyboardUpFunc(kuFunc);
+		glutSpecialFunc(ksFunc);
+		glutSpecialUpFunc(ksuFunc);
 
 		if (glewInit()) {
 			std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
@@ -355,6 +357,32 @@ namespace GLContext {
 		this->keyBuffer->unset(key);
 	}
 
+	void GLContext::keySpecial(int key)
+	{
+		if (key == GLUT_KEY_LEFT)
+		{
+			this->camera->yaw(1.0f);
+		}
+		if (key == GLUT_KEY_RIGHT)
+		{
+			this->camera->yaw(-1.0f);
+		}
+		if(key == GLUT_KEY_UP)
+		{
+			this->camera->pitch(1.0f);
+		}
+		if (key == GLUT_KEY_DOWN)
+		{
+			this->camera->pitch(-1.0f);
+		}
+
+	}
+
+	void GLContext::keySpecialUp(int key)
+	{
+		
+	}
+
 	void GLContext::processKeyboardEvents()
 	{
 		if (this->keyBuffer->isSet('w'))
@@ -393,7 +421,7 @@ namespace GLContext {
 
 	void GLContext::processPhysics(float deltaTime)
 	{
-		if (this->camera->position.y < HEIGHT_FROM_GROUND)
+		if (!this->physicsModel->onGround && this->camera->position.y < HEIGHT_FROM_GROUND)
 		{
 			this->camera->position.y = HEIGHT_FROM_GROUND;
 			this->physicsModel->contactedGround();

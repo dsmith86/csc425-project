@@ -19,6 +19,8 @@ namespace GLContext {
 	typedef void(*passiveMouseFunc)(int x, int y);
 	typedef void(*keyboardDownFunc)(unsigned char key, int x, int y);
 	typedef void(*keyboardUpFunc)(unsigned char key, int x, int y);
+	typedef void(*keyboardSpecialFunc)(int key, int x, int y);
+	typedef void(*keyboardSpecialUpFunc)(int key, int x, int y);
 
 	typedef enum {
 		UP, LEFT, FRONT
@@ -59,7 +61,7 @@ namespace GLContext {
 	public:
 		GLContext();
 		~GLContext();
-		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc);
+		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc, keyboardSpecialFunc ksFunc, keyboardSpecialUpFunc ksuFunc);
 		bool initShaders(const material s[], int n);
 		bool initModels(const model m[], int n);
 		void initCamera(glm::vec3 position, glm::vec3 gaze);
@@ -70,6 +72,8 @@ namespace GLContext {
 		void reshape(int w, int h);
 		void keyPressed(unsigned char key);
 		void keyReleased(unsigned char key);
+		void keySpecial(int key);
+		void keySpecialUp(int key);
 		void rotateCamera(float x, float y, float smoothing);
 		void moveCamera(Camera::DIRECTION direction);
 	private:

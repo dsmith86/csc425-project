@@ -16,6 +16,8 @@ void reshape(int w, int h);
 void mouseMoved(int x, int y);
 void keyPressed(unsigned char key, int x, int y);
 void keyReleased(unsigned char key, int x, int y);
+void keySpecial(int key, int x, int y);
+void keySpecialUp(int key, int x, int y);
 
 void arrange_in_circle(modelBag &models, int count, float radius);
 void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yOffset);
@@ -39,12 +41,12 @@ int main(int argc, char *argv[])
 	//arrange_in_circle(models, 1000, 5);
 	arrange_in_cube(models, 5, 4, HEIGHT_FROM_GROUND);
 
-	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, keyPressed, keyReleased) &&
+	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
 		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));
-		glContext->initLight(0, 0, -0.5);
+		glContext->initLight(5, 5, 0);
 		glContext->run();
 	}
 
@@ -65,7 +67,7 @@ void reshape(int w, int h)
 
 void mouseMoved(int x, int y)
 {
-	glContext->rotateCamera(x, y, 0.1);
+	glContext->rotateCamera(x, y, 0.3);
 }
 
 void keyPressed(unsigned char key, int x, int y)
@@ -76,6 +78,16 @@ void keyPressed(unsigned char key, int x, int y)
 void keyReleased(unsigned char key, int x, int y)
 {
 	glContext->keyReleased(key);
+}
+
+void keySpecial(int key, int x, int y)
+{
+	glContext->keySpecial(key);
+}
+
+void keySpecialUp(int key, int x, int y)
+{
+	glContext->keySpecialUp(key);
 }
 
 void arrange_in_circle(modelBag &models, int count, float radius)
