@@ -224,9 +224,9 @@ namespace GLContext {
 
 	}
 
-	void GLContext::initLight(float x, float y, float z)
+	void GLContext::initLight(glm::vec3 light)
 	{
-		this->light = { x, y, z };
+		this->light = light;
 	}
 
 	void GLContext::run()
@@ -258,9 +258,6 @@ namespace GLContext {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 
-
-			glm::mat4 perspectiveTransform = this->projectionTransform * this->viewTransform;
-
 			for (int i = 0; i < this->numVAOs; i++)
 			{
 				model m = this->models[i];
@@ -273,12 +270,24 @@ namespace GLContext {
 
 				glm::vec3 rotationTheta = glm::vec3(m.rotationAxis == DIRECTION::LEFT, m.rotationAxis == DIRECTION::UP, m.rotationAxis == DIRECTION::FRONT);
 
-				glm::mat4 mod = glm::translate(perspectiveTransform, glm::vec3(m.position.x, m.position.y, m.position.z));
+				glm::mat4 mod = glm::translate(glm::mat4(1.0) , glm::vec3(m.position.x, m.position.y, m.position.z));
 				mod = glm::rotate(mod, theta, rotationTheta);
 
-				GLint modelViewProjectionLoc = glGetUniformLocation(program, "modelViewProjection");
+				GLint projectionTransformLoc = glGetUniformLocation(program, "projectionTransform");
 
-				glUniformMatrix4fv(modelViewProjectionLoc, 1, GL_FALSE, glm::value_ptr(mod));
+				glUniformMatrix4fv(projectionTransformLoc, 1, GL_FALSE, glm::value_ptr(this->projectionTransform));
+
+				GLint viewTransformLoc = glGetUniformLocation(program, "viewTransform");
+
+				glUniformMatrix4fv(viewTransformLoc, 1, GL_FALSE, glm::value_ptr(this->viewTransform));
+
+				GLint modelTransformLoc = glGetUniformLocation(program, "modelTransform");
+
+				glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(mod));
+
+				GLint lightLoc = glGetUniformLocation(program, "uLight");
+
+				glUniform3fv(lightLoc, 1, &this->light[0]);
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}
@@ -359,28 +368,12 @@ namespace GLContext {
 
 	void GLContext::keySpecial(int key)
 	{
-		if (key == GLUT_KEY_LEFT)
-		{
-			this->camera->yaw(1.0f);
-		}
-		if (key == GLUT_KEY_RIGHT)
-		{
-			this->camera->yaw(-1.0f);
-		}
-		if(key == GLUT_KEY_UP)
-		{
-			this->camera->pitch(1.0f);
-		}
-		if (key == GLUT_KEY_DOWN)
-		{
-			this->camera->pitch(-1.0f);
-		}
-
+		this->keyBuffer->setSpecial(key);
 	}
 
 	void GLContext::keySpecialUp(int key)
 	{
-		
+		this->keyBuffer->unsetSpecial(key);
 	}
 
 	void GLContext::processKeyboardEvents()
@@ -416,6 +409,22 @@ namespace GLContext {
 		if (this->keyBuffer->isSet('D'))
 		{
 			//this->camera->translate(Camera::DIRECTION::RIGHT, 0.25f);
+		}
+		if (this->keyBuffer->isSetSpecial(GLUT_KEY_LEFT))
+		{
+			this->camera->yaw(1.0f);
+		}
+		if (this->keyBuffer->isSetSpecial(GLUT_KEY_RIGHT))
+		{
+			this->camera->yaw(-1.0f);
+		}
+		if (this->keyBuffer->isSetSpecial(GLUT_KEY_UP))
+		{
+			this->camera->pitch(1.0f);
+		}
+		if (this->keyBuffer->isSetSpecial(GLUT_KEY_DOWN))
+		{
+			this->camera->pitch(-1.0f);
 		}
 	}
 

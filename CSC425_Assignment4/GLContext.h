@@ -65,7 +65,7 @@ namespace GLContext {
 		bool initShaders(const material s[], int n);
 		bool initModels(const model m[], int n);
 		void initCamera(glm::vec3 position, glm::vec3 gaze);
-		void initLight(float x, float y, float z);
+		void initLight(glm::vec3 light);
 		void run();
 		void render();
 		void quit();
@@ -83,7 +83,7 @@ namespace GLContext {
 		KeyBuffer *keyBuffer;
 		PhysicsModel *physicsModel;
 		bool cameraInitialized;
-		vec3 light;
+		glm::vec3 light;
 		bool success;
 		int lastTime;
 		size_t numVAOs;

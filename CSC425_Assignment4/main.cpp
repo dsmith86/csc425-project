@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 		glContext->initModels(&models.front(), models.size()));
 	{
 		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));
-		glContext->initLight(5, 5, 0);
+		glContext->initLight(glm::vec3(5.0, 5.0, 0.0));
 		glContext->run();
 	}
 
