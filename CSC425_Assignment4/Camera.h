@@ -22,7 +22,6 @@ public:
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 front;
-	bool cursorActive;
 private:
 	float smoothing;
 };

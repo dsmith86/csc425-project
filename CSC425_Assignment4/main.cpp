@@ -14,6 +14,7 @@ typedef vector<GLContext::model> modelBag;
 void display(void);
 void reshape(int w, int h);
 void mouseMoved(int x, int y);
+void mouseStateChanged(int button, int state, int x, int y);
 void keyPressed(unsigned char key, int x, int y);
 void keyReleased(unsigned char key, int x, int y);
 void keySpecial(int key, int x, int y);
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
 	//arrange_in_circle(models, 1000, 5);
 	arrange_in_cube(models, 5, 4, HEIGHT_FROM_GROUND);
 
-	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
+	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, mouseStateChanged, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
 		glContext->initShaders(materials, 1) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
@@ -68,6 +69,11 @@ void reshape(int w, int h)
 void mouseMoved(int x, int y)
 {
 	glContext->rotateCamera(x, y, 0.3);
+}
+
+void mouseStateChanged(int button, int state, int x, int y)
+{
+	glContext->mouseStateChanged(button, state);
 }
 
 void keyPressed(unsigned char key, int x, int y)

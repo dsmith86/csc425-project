@@ -16,7 +16,8 @@ namespace GLContext {
 
 	typedef void(*displayFunc)(void);
 	typedef void(*reshapeFunc)(int w, int h);
-	typedef void(*passiveMouseFunc)(int x, int y);
+	typedef void(*motionFunc)(int x, int y);
+	typedef void(*mouseStateFunc)(int button, int state, int x, int y);
 	typedef void(*keyboardDownFunc)(unsigned char key, int x, int y);
 	typedef void(*keyboardUpFunc)(unsigned char key, int x, int y);
 	typedef void(*keyboardSpecialFunc)(int key, int x, int y);
@@ -61,7 +62,15 @@ namespace GLContext {
 	public:
 		GLContext();
 		~GLContext();
-		bool initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc, keyboardSpecialFunc ksFunc, keyboardSpecialUpFunc ksuFunc);
+		bool initContext(int argc, char** argv,
+			displayFunc dFunc,
+			reshapeFunc rFunc,
+			motionFunc mFunc,
+			mouseStateFunc msFunc,
+			keyboardDownFunc kdFunc,
+			keyboardUpFunc kuFunc,
+			keyboardSpecialFunc ksFunc,
+			keyboardSpecialUpFunc ksuFunc);
 		bool initShaders(const material s[], int n);
 		bool initModels(const model m[], int n);
 		void initCamera(glm::vec3 position, glm::vec3 gaze);
@@ -74,6 +83,7 @@ namespace GLContext {
 		void keyReleased(unsigned char key);
 		void keySpecial(int key);
 		void keySpecialUp(int key);
+		void mouseStateChanged(int button, int state);
 		void rotateCamera(float x, float y, float smoothing);
 		void moveCamera(Camera::DIRECTION direction);
 	private:
@@ -95,6 +105,9 @@ namespace GLContext {
 		float w;
 		float h;
 		bool mouseMoved;
+		bool mouseDown;
+		int mouseLastX;
+		int mouseLastY;
 
 		glm::mat4 projectionTransform;
 		glm::mat4 viewTransform;

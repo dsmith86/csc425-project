@@ -8,7 +8,6 @@ Camera::Camera()
 	this->gaze = glm::vec3(0.0, 0.0, 0.0);
 	this->up = glm::vec3(0.0, 1.0, 0.0);
 	this->smoothing = DEFAULT_SMOOTHING;
-	this->cursorActive = true;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 gaze)
@@ -19,7 +18,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 gaze)
 	this->up = glm::normalize(glm::cross(glm::cross(this->front, glm::vec3(0.0, 1.0, 0.0)), this->front));
 	this->right = glm::normalize(glm::cross(this->front, this->up));
 	this->smoothing = DEFAULT_SMOOTHING;
-	this->cursorActive = true;
 }
 
 Camera::~Camera()
@@ -43,7 +41,7 @@ void Camera::pitch(float y)
 	this->gaze = this->position + this->front;
 
 	// correct up vector's tilt
-	this->right.y = 0;
+	this->right = glm::normalize(glm::vec3(this->right.x, 0, this->right.z));
 	this->up = glm::cross(this->right, this->front);
 }
 

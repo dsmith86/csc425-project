@@ -15,16 +15,18 @@ uniform vec3 uLight;
 void main()
 {
 	gl_Position = projectionTransform * viewTransform * modelTransform * vec4(vPosition, 1.0);
+	vec3 normal = (modelTransform * vec4(vNormal, 1.0)).xyz;
+	vec3 light = uLight - (modelTransform * vec4(vPosition, 1.0)).xyz;
 
 	float lightIntensity = 1.0;
 	float diffuseConstant = 0.1;
 
 	float ambient = 0.1;
-	float diffuse = diffuseConstant * dot(uLight, vNormal) * lightIntensity;
+	float diffuse = diffuseConstant * max(dot(light, normal), 0.0) * lightIntensity;
 
-	float light = ambient + diffuse;
+	float lightMultiplier = ambient + diffuse;
 
-	color = vec4(1.0) * light;
+	color = vec4(1.0) * lightMultiplier;
 
 	Texcoord = texcoord;
 }

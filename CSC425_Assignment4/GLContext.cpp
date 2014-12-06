@@ -41,7 +41,7 @@ namespace GLContext {
 	}
 
 
-	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, passiveMouseFunc mFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc, keyboardSpecialFunc ksFunc, keyboardSpecialUpFunc ksuFunc)
+	bool GLContext::initContext(int argc, char** argv, displayFunc dFunc, reshapeFunc rFunc, motionFunc mFunc, mouseStateFunc msFunc, keyboardDownFunc kdFunc, keyboardUpFunc kuFunc, keyboardSpecialFunc ksFunc, keyboardSpecialUpFunc ksuFunc)
 	{
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -54,7 +54,9 @@ namespace GLContext {
 
 		glutIdleFunc(dFunc);
 		glutReshapeFunc(rFunc);
+		glutMotionFunc(mFunc);
 		glutPassiveMotionFunc(mFunc);
+		glutMouseFunc(msFunc);
 		glutKeyboardFunc(kdFunc);
 		glutKeyboardUpFunc(kuFunc);
 		glutSpecialFunc(ksFunc);
@@ -71,6 +73,9 @@ namespace GLContext {
 
 		this->success = true;
 		this->mouseMoved = false;
+		this->mouseDown = false;
+		this->mouseLastX = -1;
+		this->mouseLastY = -1;
 		return true;
 	}
 
@@ -238,8 +243,6 @@ namespace GLContext {
 			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 1000.0f);
 			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->position, this->camera->gaze, glm::vec3(0.0, 1.0, 0.0));
 
-			glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
-
 			glutMainLoop();
 		}
 	}
@@ -294,11 +297,6 @@ namespace GLContext {
 
 			glFlush();
 			glutSwapBuffers();
-
-			if (this->camera->cursorActive)
-			{
-				glutWarpPointer(glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2);
-			}
 		}
 	}
 
@@ -313,18 +311,41 @@ namespace GLContext {
 		this->h = (float)h;
 	}
 
+	void GLContext::mouseStateChanged(int button, int state)
+	{
+		if (button == GLUT_RIGHT_BUTTON)
+		{
+			if (state == GLUT_DOWN)
+			{
+				mouseDown = true;
+			}
+			else
+			{
+				mouseDown = false;
+			}
+		}
+	}
+
 	void GLContext::rotateCamera(float x, float y, float smoothing)
 	{
-		if (!this->camera->cursorActive)
+		if (this->mouseLastX == -1 && this->mouseLastX == -1)
+		{
+			this->mouseLastX = x;
+			this->mouseLastY = y;
+		}
+
+		float deltaX = (float)this->mouseLastX - x;
+		float deltaY = (float)this->mouseLastY - y;
+
+		this->mouseLastX = x;
+		this->mouseLastY = y;
+
+		if (this->mouseDown == false)
 		{
 			return;
 		}
 
-		float midX = glutGet(GLUT_WINDOW_WIDTH) / 2.0;
-		float midY = glutGet(GLUT_WINDOW_HEIGHT) / 2.0;
-
-		float deltaX = midX - x;
-		float deltaY = midY - y;
+		std::cout << deltaX << " " << deltaY << std::endl;
 
 		deltaX *= smoothing;
 		deltaY *= smoothing;
@@ -350,10 +371,6 @@ namespace GLContext {
 		if (key == 'q')
 		{
 			glutLeaveMainLoop();
-		}
-		if (key == 'c')
-		{
-			this->camera->cursorActive = !this->camera->cursorActive;
 		}
 		if (key == ' ')
 		{
@@ -426,6 +443,8 @@ namespace GLContext {
 		{
 			this->camera->pitch(-1.0f);
 		}
+
+		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
 	}
 
 	void GLContext::processPhysics(float deltaTime)
