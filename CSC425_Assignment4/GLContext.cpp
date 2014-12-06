@@ -11,6 +11,7 @@
 #include <vec3.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+#include "stb_image.h"
 
 namespace GLContext {
 
@@ -96,6 +97,35 @@ namespace GLContext {
 				std::pair<const char*, GLuint> shaderProgram(s[i].materialName, program);
 
 				this->shaderPrograms.insert(shaderProgram);
+
+				// Gen texture
+
+				GLuint tex;
+				glGenTextures(1, &tex);
+				glBindTexture(GL_TEXTURE_2D, tex);
+
+				// Load image
+				std::string filename = "Textures/brick.png";
+
+				int w;
+				int h;
+				int comp;
+				unsigned char* image = stbi_load(filename.c_str(), &w, &h, &comp, STBI_rgb_alpha);
+
+				if (comp == 3)
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+				else if (comp == 4)
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+				glGenerateMipmap(GL_TEXTURE_2D);
+
+				stbi_image_free(image);
 			}
 
 			return true;
@@ -119,58 +149,22 @@ namespace GLContext {
 
 			glGenBuffers(n, this->VBOs);
 
-			// Gen texture
-
-			GLuint tex;
-			glGenTextures(1, &tex);
-			glBindTexture(GL_TEXTURE_2D, tex);
-
-			// Load image
-
-			float pixels[] = {
-				.59, .42, .29,
-				.47, .34, .23,
-				.73, .52, .36,
-				.59, .42, .29,
-				.59, .42, .29,
-				.47, .34, .23,
-				.47, .34, .23,
-				.73, .52, .36,
-				.47, .34, .23,
-				.59, .42, .29,
-				.47, .34, .23,
-				.47, .34, .23,
-				.35, .24, .16,
-				.35, .24, .16,
-				.47, .34, .23,
-				.59, .42, .29
-			};
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4, 4, 0, GL_RGB, GL_FLOAT, pixels);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glGenerateMipmap(GL_TEXTURE_2D);
-
 			GLfloat *texCoords = new GLfloat[72];
 
 			for (int i = 0; i < 6; i++)
 			{
-				texCoords[i * 12] = 1;
-				texCoords[i * 12 + 1] = 0;
-				texCoords[i * 12 + 2] = 1;
-				texCoords[i * 12 + 3] = 1;
-				texCoords[i * 12 + 4] = 0;
-				texCoords[i * 12 + 5] = 1;
-				texCoords[i * 12 + 6] = 1;
-				texCoords[i * 12 + 7] = 0;
-				texCoords[i * 12 + 8] = 0;
-				texCoords[i * 12 + 9] = 1;
-				texCoords[i * 12 + 10] = 0;
-				texCoords[i * 12 + 11] = 0;
+				texCoords[i * 12] = 0;
+				texCoords[i * 12 + 1] = 1;
+				texCoords[i * 12 + 2] = 0;
+				texCoords[i * 12 + 3] = 0;
+				texCoords[i * 12 + 4] = 1;
+				texCoords[i * 12 + 5] = 0;
+				texCoords[i * 12 + 6] = 0;
+				texCoords[i * 12 + 7] = 1;
+				texCoords[i * 12 + 8] = 1;
+				texCoords[i * 12 + 9] = 0;
+				texCoords[i * 12 + 10] = 1;
+				texCoords[i * 12 + 11] = 1;
 			}
 
 			// End load texture
@@ -344,8 +338,6 @@ namespace GLContext {
 		{
 			return;
 		}
-
-		std::cout << deltaX << " " << deltaY << std::endl;
 
 		deltaX *= smoothing;
 		deltaY *= smoothing;

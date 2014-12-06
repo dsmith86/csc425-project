@@ -101,6 +101,7 @@ REM xcopy /d /y "$(ProjectDir)Textures\*.*" "$(OutDir)"</Command>
     <ClInclude Include="InstancedMeshFactory.h" />
     <ClInclude Include="KeyBuffer.h" />
     <ClInclude Include="PhysicsModel.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="wglext.h" />
   </ItemGroup>
   <ItemGroup>

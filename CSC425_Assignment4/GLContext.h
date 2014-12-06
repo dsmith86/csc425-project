@@ -7,6 +7,9 @@
 #include <vec3.hpp>
 #include <glm.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ASSERT(x)
+
 #define JUMP_IMPULSE 50000.0f
 #define HEIGHT_FROM_GROUND 1
 
@@ -39,6 +42,7 @@ namespace GLContext {
 		const char *materialName;
 		const char *vertexShader;
 		const char *fragmentShader;
+		const char *texture;
 	};
 
 	struct model

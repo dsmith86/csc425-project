@@ -26,7 +26,7 @@ void main()
 
 	float lightMultiplier = ambient + diffuse;
 
-	color = vec4(1.0) * lightMultiplier;
+	color = vec4(1.0);
 
 	Texcoord = texcoord;
 }

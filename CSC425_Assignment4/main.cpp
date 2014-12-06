@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	glContext = new GLContext::GLContext();
 
 	GLContext::material materials[] = {
-			{ "texture", "texture.vert", "texture.frag" }
+			{ "texture", "texture.vert", "texture.frag", "brick.png" }
 	};
 
 	InstancedCubeFactory cubeFactory = InstancedCubeFactory();
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	modelBag models = modelBag();
 
 	//arrange_in_circle(models, 1000, 5);
-	arrange_in_cube(models, 5, 4, HEIGHT_FROM_GROUND);
+	arrange_in_cube(models, 1, 10, HEIGHT_FROM_GROUND);
 
 	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, mouseStateChanged, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
 		glContext->initShaders(materials, 1) &&
@@ -136,7 +136,7 @@ void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yO
 	float deltaY = (float)dimens / y * 2;
 	float deltaZ = (float)dimens / z * 2;
 
-	float cubeScale = min(1.0f, deltaX / 1.5f);
+	float cubeScale = deltaX / 1.5f;
 
 	cout << "scale: " << cubeScale << endl;
 
