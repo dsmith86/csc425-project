@@ -21,8 +21,8 @@ void keySpecial(int key, int x, int y);
 void keySpecialUp(int key, int x, int y);
 
 void arrange_in_circle(modelBag &models, int count, float radius);
-void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yOffset);
-void arrange_in_cube(modelBag &models, int count, int dimens, float yOffset);
+void place_cubes(modelBag &models, int x, int y, int z, int dimens, glm::vec3 origin, const char *material);
+void place_cubes(modelBag &models, int count, int dimens, glm::vec3 origin, const char *material);
 
 GLContext::GLContext *glContext;
 
@@ -31,19 +31,33 @@ int main(int argc, char *argv[])
 	glContext = new GLContext::GLContext();
 
 	GLContext::material materials[] = {
-			{ "texture", "texture.vert", "texture.frag", "brick.png" }
+			{ "wood", "texture.vert", "texture.frag", "wood.png", 1 },
+			{ "rubiks", "texture.vert", "texture.frag", "rubiks.png", 1 },
+			{ "rust", "texture.vert", "texture.frag", "rust.png", 1 },
+			{ "nicolascage", "texture.vert", "texture.frag", "nicolascage.png", 1 },
+			{ "ground", "texture.vert", "texture.frag", "ground.png", 10 },
+			{ "sky", "texture.vert", "texture.frag", "sky.png", 1 }
 	};
-
-	InstancedCubeFactory cubeFactory = InstancedCubeFactory();
-	cubeFactory.init(glm::vec3(1.0, 1.0, 1.0), "dirt", "texture");
 
 	modelBag models = modelBag();
 
 	//arrange_in_circle(models, 1000, 5);
-	arrange_in_cube(models, 1, 10, HEIGHT_FROM_GROUND);
+	place_cubes(models, 1, 1, glm::vec3(0, 0, 0), "wood");
+	place_cubes(models, 1, 1, glm::vec3(5, 0, 0), "rubiks");
+	place_cubes(models, 1, 10, glm::vec3(-20, 0, 0), "rust");
+	place_cubes(models, 4, 3, glm::vec3(2, 0, 10), "nicolascage");
+	
+	models.push_back(Cube({ 0, -0.75, 0 }, { 200, 0.01, 200 }, "ground", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ 0, 0, 100 }, { 200, 100, 1 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ 100, 0, 0 }, { 1, 100, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ 0, 0, -100 }, { 200, 100, 1 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ -100, 0, 0 }, { 1, 100, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ 0, 50, 0 }, { 200, 1, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+
+
 
 	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, mouseStateChanged, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
-		glContext->initShaders(materials, 1) &&
+		glContext->initShaders(materials, 6) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
 		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));
@@ -100,7 +114,7 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 {
 	if (count == 1)
 	{
-		models.push_back(Cube({ 0.0, 0.0, 0.0 }, { 1.0, 1.0, 1.0 }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.1)->modelData());
+		models.push_back(Cube({ 0.0, 0.0, 0.0 }, { 1.0, 1.0, 1.0 }, "wood", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 		return;
 	}
 
@@ -121,16 +135,16 @@ void arrange_in_circle(modelBag &models, int count, float radius)
 		float x = radius * cos(theta * i * RADIANS_PER_DEGREE);
 		float y = radius * sin(theta * i * RADIANS_PER_DEGREE);
 
-		models.push_back(Cube({ x, y, 0.0 }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, direction)->modelData());
+		models.push_back(Cube({ x, y, 0.0 }, { cubeScale, cubeScale, cubeScale }, "wood", 0, 1).setRotation(GLContext::DIRECTION::UP, direction)->modelData());
 	}
 }
 
-void arrange_in_cube(modelBag &models, int count, int dimens, float yOffset)
+void place_cubes(modelBag &models, int count, int dimens, glm::vec3 origin, const char *material)
 {
-	arrange_in_cube(models, count, count, count, dimens, yOffset);
+	place_cubes(models, count, count, count, dimens, origin, material);
 }
 
-void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yOffset)
+void place_cubes(modelBag &models, int x, int y, int z, int dimens, glm::vec3 origin, const char *material)
 {
 	float deltaX = (float)dimens / x * 2;
 	float deltaY = (float)dimens / y * 2;
@@ -138,7 +152,7 @@ void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yO
 
 	float cubeScale = deltaX / 1.5f;
 
-	cout << "scale: " << cubeScale << endl;
+	float yOffset = (y > 1) ? cubeScale : 0;
 
 	for (int i = 0; i < x; i++)
 	{
@@ -151,7 +165,7 @@ void arrange_in_cube(modelBag &models, int x, int y, int z, int dimens, float yO
 				float zCoord = (k <= z / 2.0) ? -dimens + deltaZ * k + deltaZ / 2 : dimens - deltaZ * (z - k) + deltaZ / 2;
 
 				// I'm offsetting the yCoord to account for the ground plane
-				models.push_back(Cube({ xCoord, yCoord + yOffset, zCoord }, { cubeScale, cubeScale, cubeScale }, "dirt", "texture").setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+				models.push_back(Cube({ xCoord + origin.x, yCoord + dimens / 2 + origin.y + yOffset, zCoord + origin.z }, { cubeScale, cubeScale, cubeScale }, material, 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 			}
 		}
 	}

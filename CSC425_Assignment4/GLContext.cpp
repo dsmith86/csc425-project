@@ -21,6 +21,8 @@ namespace GLContext {
 	{
 		this->success = false;
 		this->shaderPrograms = std::unordered_map<const char*, GLuint>();
+		this->textures = std::unordered_map<const char*, GLuint>();
+		this->tiling = std::unordered_map<const char*, int>();
 	}
 
 
@@ -105,7 +107,8 @@ namespace GLContext {
 				glBindTexture(GL_TEXTURE_2D, tex);
 
 				// Load image
-				std::string filename = "Textures/brick.png";
+				std::string filename = "Textures/";
+				filename += s[i].texture;
 
 				int w;
 				int h;
@@ -126,6 +129,12 @@ namespace GLContext {
 				glGenerateMipmap(GL_TEXTURE_2D);
 
 				stbi_image_free(image);
+
+				std::pair<const char*, GLuint> texture(s[i].materialName, tex);
+				std::pair<const char*, int> tiling(s[i].materialName, s[i].tiling);
+
+				this->textures.insert(texture);
+				this->tiling.insert(tiling);
 			}
 
 			return true;
@@ -149,29 +158,33 @@ namespace GLContext {
 
 			glGenBuffers(n, this->VBOs);
 
-			GLfloat *texCoords = new GLfloat[72];
-
-			for (int i = 0; i < 6; i++)
-			{
-				texCoords[i * 12] = 0;
-				texCoords[i * 12 + 1] = 1;
-				texCoords[i * 12 + 2] = 0;
-				texCoords[i * 12 + 3] = 0;
-				texCoords[i * 12 + 4] = 1;
-				texCoords[i * 12 + 5] = 0;
-				texCoords[i * 12 + 6] = 0;
-				texCoords[i * 12 + 7] = 1;
-				texCoords[i * 12 + 8] = 1;
-				texCoords[i * 12 + 9] = 0;
-				texCoords[i * 12 + 10] = 1;
-				texCoords[i * 12 + 11] = 1;
-			}
+			
 
 			// End load texture
 
 
 			for (int i = 0; i < n; i++)
 			{
+				GLfloat *texCoords = new GLfloat[72];
+
+				int tiling = this->tiling[m[i].shader];
+
+				for (int i = 0; i < 6; i++)
+				{
+					texCoords[i * 12] = m[i].texCoord0;
+					texCoords[i * 12 + 1] = tiling * m[i].texCoord1;
+					texCoords[i * 12 + 2] = m[i].texCoord0;
+					texCoords[i * 12 + 3] = m[i].texCoord0;
+					texCoords[i * 12 + 4] = tiling * m[i].texCoord1;
+					texCoords[i * 12 + 5] = m[i].texCoord0;
+					texCoords[i * 12 + 6] = m[i].texCoord0;
+					texCoords[i * 12 + 7] = tiling * m[i].texCoord1;
+					texCoords[i * 12 + 8] = tiling * m[i].texCoord1;
+					texCoords[i * 12 + 9] = m[i].texCoord0;
+					texCoords[i * 12 + 10] = tiling * m[i].texCoord1;
+					texCoords[i * 12 + 11] = tiling * m[i].texCoord1;
+				}
+
 				int vertexCount = m[i].vertices.size();
 				int normalCount = m[i].normals.size();
 
@@ -182,6 +195,8 @@ namespace GLContext {
 				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, &m[i].vertices.front());
 				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(GLfloat) * normalCount, &m[i].normals.front());
 				glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (vertexCount + normalCount), sizeof(GLfloat) * 72, texCoords);
+
+				delete texCoords;
 
 				GLuint program = this->shaderPrograms[m[i].shader];
 				glUseProgram(program);
@@ -262,6 +277,8 @@ namespace GLContext {
 				GLuint program = this->shaderPrograms[m.shader];
 				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
+
+				glBindTexture(GL_TEXTURE_2D, this->textures[m.shader]);
 
 				float theta = fmod(m.rotationTheta * currentTime, 360);
 
@@ -366,7 +383,8 @@ namespace GLContext {
 		}
 		if (key == ' ')
 		{
-			this->physicsModel->jump(JUMP_IMPULSE);
+			// temporarily disabled until issues are resolved
+			//this->physicsModel->jump(JUMP_IMPULSE);
 		}
 	}
 
@@ -389,7 +407,7 @@ namespace GLContext {
 	{
 		if (this->keyBuffer->isSet('w'))
 		{
-			this->camera->translate(Camera::DIRECTION::FORWARD);
+			this->camera->translate(Camera::DIRECTION::FORWARD, 0.75);
 		}
 		if (this->keyBuffer->isSet('W'))
 		{
@@ -397,7 +415,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('a'))
 		{
-			this->camera->translate(Camera::DIRECTION::LEFT);
+			this->camera->translate(Camera::DIRECTION::LEFT, 0.75);
 		}
 		if (this->keyBuffer->isSet('A'))
 		{
@@ -405,7 +423,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('s'))
 		{
-			this->camera->translate(Camera::DIRECTION::BACK);
+			this->camera->translate(Camera::DIRECTION::BACK, 0.75);
 		}
 		if (this->keyBuffer->isSet('S'))
 		{
@@ -413,7 +431,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('d'))
 		{
-			this->camera->translate(Camera::DIRECTION::RIGHT);
+			this->camera->translate(Camera::DIRECTION::RIGHT, 0.75);
 		}
 		if (this->keyBuffer->isSet('D'))
 		{
@@ -421,11 +439,11 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSetSpecial(GLUT_KEY_LEFT))
 		{
-			this->camera->yaw(1.0f);
+			this->camera->yaw(1.5f);
 		}
 		if (this->keyBuffer->isSetSpecial(GLUT_KEY_RIGHT))
 		{
-			this->camera->yaw(-1.0f);
+			this->camera->yaw(-1.5f);
 		}
 		if (this->keyBuffer->isSetSpecial(GLUT_KEY_UP))
 		{
@@ -443,8 +461,9 @@ namespace GLContext {
 	{
 		if (!this->physicsModel->onGround && this->camera->position.y < HEIGHT_FROM_GROUND)
 		{
-			this->camera->position.y = HEIGHT_FROM_GROUND;
 			this->physicsModel->contactedGround();
+			this->camera->position.y = HEIGHT_FROM_GROUND;
+			this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
 			return;
 		}
 

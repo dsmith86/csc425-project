@@ -30,7 +30,7 @@ class Cube
 {
 public:
 	Cube(position3 position, scale3 scale, COLOR color, const char *shader); // basic, shaded
-	Cube(position3 position, scale3 scale, const char *texture, const char *shader);
+	Cube(position3 position, scale3 scale, const char *shader, float texCoord0, float texCoord1); // textured
 	Cube* setRotation(GLContext::DIRECTION direction, float theta);
 	~Cube();
 	GLContext::model modelData();
@@ -40,8 +40,8 @@ private:
 	GLContext::DIRECTION rotationAxis;
 	float rotationTheta;
 	color3 color;
-	const char *texture;
 	const char *shader;
 	GLenum renderType;
+	float texCoord0, texCoord1;
 };
 

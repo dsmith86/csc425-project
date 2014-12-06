@@ -28,12 +28,13 @@ Cube::Cube(position3 position, scale3 scale, COLOR color, const char *shader)
 	}
 }
 
-Cube::Cube(position3 position, scale3 scale, const char *texture, const char *shader)
+Cube::Cube(position3 position, scale3 scale, const char *shader, float texCoord0, float texCoord1)
 {
 	this->position = position;
 	this->scale = scale;
-	this->texture = texture;
 	this->shader = shader;
+	this->texCoord0 = texCoord0;
+	this->texCoord1 = texCoord1;
 }
 
 Cube::~Cube()
@@ -96,6 +97,8 @@ GLContext::model Cube::modelData()
 	m.position = this->position;
 	m.rotationAxis = this->rotationAxis;
 	m.rotationTheta = this->rotationTheta;
+	m.texCoord0 = this->texCoord0;
+	m.texCoord1 = this->texCoord1;
 
 	return m;
 }

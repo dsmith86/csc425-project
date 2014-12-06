@@ -41,7 +41,7 @@ void Camera::pitch(float y)
 	this->gaze = this->position + this->front;
 
 	// correct up vector's tilt
-	this->right = glm::normalize(glm::vec3(this->right.x, 0, this->right.z));
+	this->right.y = 0;
 	this->up = glm::cross(this->right, this->front);
 }
 

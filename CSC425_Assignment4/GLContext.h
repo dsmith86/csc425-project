@@ -43,6 +43,7 @@ namespace GLContext {
 		const char *vertexShader;
 		const char *fragmentShader;
 		const char *texture;
+		int tiling;
 	};
 
 	struct model
@@ -56,6 +57,8 @@ namespace GLContext {
 		const char *shader;
 		GLenum renderType;
 		GLfloat shininess;
+		float texCoord0;
+		float texCoord1;
 	};
 
 	typedef glm::vec4 color4;
@@ -106,6 +109,8 @@ namespace GLContext {
 		GLuint *VBOs;
 		model *models;
 		std::unordered_map<const char*, GLuint> shaderPrograms;
+		std::unordered_map<const char*, GLuint> textures;
+		std::unordered_map<const char*, int> tiling;
 		float w;
 		float h;
 		bool mouseMoved;
