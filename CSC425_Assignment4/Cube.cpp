@@ -1,5 +1,6 @@
 #include "Cube.h"
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 void pushBack(vector<GLfloat> *vector, int times, DIRECTIONS d, int arraySize);

@@ -15,6 +15,7 @@
 
 namespace GLContext {
 
+	void loadImageFromFile(GLuint &loc, std::string filename);
 	bool validAttribLocation(GLuint location);
 
 	GLContext::GLContext()
@@ -103,38 +104,24 @@ namespace GLContext {
 				// Gen texture
 
 				GLuint tex;
-				glGenTextures(1, &tex);
-				glBindTexture(GL_TEXTURE_2D, tex);
 
-				// Load image
-				std::string filename = "Textures/";
-				filename += s[i].texture;
-
-				int w;
-				int h;
-				int comp;
-				unsigned char* image = stbi_load(filename.c_str(), &w, &h, &comp, STBI_rgb_alpha);
-
-				if (comp == 3)
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-				else if (comp == 4)
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-				glGenerateMipmap(GL_TEXTURE_2D);
-
-				stbi_image_free(image);
+				loadImageFromFile(tex, s[i].texture);
 
 				std::pair<const char*, GLuint> texture(s[i].materialName, tex);
 				std::pair<const char*, int> tiling(s[i].materialName, s[i].tiling);
 
 				this->textures.insert(texture);
 				this->tiling.insert(tiling);
+
+				if (s[i].normalMap != NULL)
+				{
+					GLuint nMap;
+
+					loadImageFromFile(nMap, s[i].normalMap);
+
+					std::pair<const char*, GLuint> normalMap(s[i].materialName, nMap);
+					this->normalMaps.insert(normalMap);
+				}
 			}
 
 			return true;
@@ -283,7 +270,30 @@ namespace GLContext {
 				glUseProgram(program);
 				glBindVertexArray(this->VAOs[i]);
 
+				GLint texLoc = glGetUniformLocation(program, "uTex");
+				glUniform1i(texLoc, 0);
+
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, this->textures[m.shader]);
+
+				GLint normalMapEnabledLoc = glGetUniformLocation(program, "uNormalMapEnabled");
+
+				if (this->normalMaps.count(m.shader) > 0)
+				{
+					GLint normalMapLoc = glGetUniformLocation(program, "uNormalMap");
+					glUniform1i(texLoc, 1);
+
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, this->normalMaps[m.shader]);
+
+					GLint normalMapEnabledLoc = glGetUniformLocation(program, "uNormalMapEnabled");
+
+					glUniform1i(normalMapEnabledLoc, 1);
+				}
+				else
+				{
+					glUniform1i(normalMapEnabledLoc, 0);
+				}
 
 				float theta = fmod(m.rotationTheta * currentTime, 360);
 
@@ -489,7 +499,14 @@ namespace GLContext {
 			direction.y = 0;
 			this->light = this->light - glm::normalize(direction) * 0.25f;
 		}
-
+		if (this->keyBuffer->isSet('['))
+		{
+			this->light = this->light + glm::vec3(0, 0.25f, 0);
+		}
+		if (this->keyBuffer->isSet(']'))
+		{
+			this->light = this->light - glm::vec3(0, 0.25f, 0);
+		}
 
 		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
 	}
@@ -515,5 +532,34 @@ namespace GLContext {
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attribs);
 
 		return location < (GLuint)max_attribs;
+	}
+
+	void loadImageFromFile(GLuint &loc, std::string filename)
+	{
+		glGenTextures(1, &loc);
+		glBindTexture(GL_TEXTURE_2D, loc);
+
+		std::string filepath = "Textures/";
+		filepath += filename;
+
+		int w;
+		int h;
+		int comp;
+		unsigned char* image = stbi_load(filepath.c_str(), &w, &h, &comp, STBI_rgb_alpha);
+
+		if (comp == 3)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		else if (comp == 4)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		stbi_image_free(image);
 	}
 }

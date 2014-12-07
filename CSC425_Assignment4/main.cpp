@@ -31,13 +31,14 @@ int main(int argc, char *argv[])
 	glContext = new GLContext::GLContext();
 
 	GLContext::material materials[] = {
-			{ "wood", "texture.vert", "texture.frag", "wood.png", 1 },
-			{ "rubiks", "texture.vert", "texture.frag", "rubiks.png", 1 },
-			{ "rust", "texture.vert", "texture.frag", "rust.png", 1 },
-			{ "nicolascage", "texture.vert", "texture.frag", "nicolascage.png", 1 },
-			{ "ground", "texture.vert", "texture.frag", "ground.png", 100 },
-			{ "sky", "texture.vert", "texture.frag", "sky.png", 1 },
-			{ "ceiling", "texture.vert", "texture.frag", "ceiling.png", 1 }
+			{ "wood", "texture.vert", "texture.frag", "wood.png", NULL, 1 },
+			{ "rubiks", "texture.vert", "texture.frag", "rubiks.png", NULL, 1 },
+			{ "rust", "texture.vert", "texture.frag", "rust.png", NULL, 1 },
+			{ "fabric", "texture.vert", "texture.frag", "fabric.png", NULL, 1 },
+			{ "nicolascage", "texture.vert", "texture.frag", "nicolascage.png", NULL, 1 },
+			{ "ground", "texture.vert", "texture.frag", "ground.png", NULL, 100 },
+			{ "sky", "texture.vert", "texture.frag", "sky.png", NULL, 1 },
+			{ "ceiling", "texture.vert", "texture.frag", "ceiling.png", NULL, 1 },
 	};
 
 	modelBag models = modelBag();
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
 	place_cubes(models, 1, 1, glm::vec3(0, 0, 0), "wood");
 	place_cubes(models, 1, 1, glm::vec3(5, 0, 0), "rubiks");
 	place_cubes(models, 1, 10, glm::vec3(-20, 0, 0), "rust");
+	place_cubes(models, 1, 5, glm::vec3(20, 0, 0), "fabric");
 	place_cubes(models, 4, 3, glm::vec3(2, 0, 10), "nicolascage");
 	
 	models.push_back(Cube({ 0, -0.75, 0 }, { 200, 0.01, 200 }, "ground", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
@@ -58,7 +60,7 @@ int main(int argc, char *argv[])
 
 
 	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, mouseStateChanged, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
-		glContext->initShaders(materials, 7) &&
+		glContext->initShaders(materials, 8) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
 		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));

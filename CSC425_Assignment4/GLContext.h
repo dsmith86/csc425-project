@@ -43,6 +43,7 @@ namespace GLContext {
 		const char *vertexShader;
 		const char *fragmentShader;
 		const char *texture;
+		const char *normalMap;
 		int tiling;
 	};
 
@@ -110,6 +111,7 @@ namespace GLContext {
 		model *models;
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		std::unordered_map<const char*, GLuint> textures;
+		std::unordered_map<const char*, GLuint> normalMaps;
 		std::unordered_map<const char*, int> tiling;
 		bool mouseMoved;
 		bool mouseDown;
