@@ -39,16 +39,12 @@ void Camera::pitch(float y)
 	this->up = glm::normalize(glm::rotate(this->up, y, this->right));
 	this->front = glm::normalize(glm::rotate(this->front, y, this->right));
 	this->gaze = this->position + this->front;
-
-	// correct up vector's tilt
-	this->right.y = 0;
-	this->up = glm::cross(this->right, this->front);
 }
 
 void Camera::yaw(float x)
 {
-	this->right = glm::rotate(this->right, x, this->up);
-	this->front = glm::rotate(this->front, x, this->up);
+	this->right = glm::rotate(this->right, x, glm::vec3(0, 1, 0));
+	this->front = glm::rotate(this->front, x, glm::vec3(0, 1, 0));
 	this->gaze = this->position + this->front;
 
 	// correct up vector's tilt
