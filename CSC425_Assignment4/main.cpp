@@ -35,8 +35,9 @@ int main(int argc, char *argv[])
 			{ "rubiks", "texture.vert", "texture.frag", "rubiks.png", 1 },
 			{ "rust", "texture.vert", "texture.frag", "rust.png", 1 },
 			{ "nicolascage", "texture.vert", "texture.frag", "nicolascage.png", 1 },
-			{ "ground", "texture.vert", "texture.frag", "ground.png", 10 },
-			{ "sky", "texture.vert", "texture.frag", "sky.png", 1 }
+			{ "ground", "texture.vert", "texture.frag", "ground.png", 100 },
+			{ "sky", "texture.vert", "texture.frag", "sky.png", 1 },
+			{ "ceiling", "texture.vert", "texture.frag", "ceiling.png", 1 }
 	};
 
 	modelBag models = modelBag();
@@ -52,12 +53,12 @@ int main(int argc, char *argv[])
 	models.push_back(Cube({ 100, 0, 0 }, { 1, 100, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 	models.push_back(Cube({ 0, 0, -100 }, { 200, 100, 1 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 	models.push_back(Cube({ -100, 0, 0 }, { 1, 100, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
-	models.push_back(Cube({ 0, 50, 0 }, { 200, 1, 200 }, "sky", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
+	models.push_back(Cube({ 0, 50, 0 }, { 200, 1, 200 }, "ceiling", 0, 1).setRotation(GLContext::DIRECTION::UP, 0.0)->modelData());
 
 
 
 	if (glContext->initContext(argc, argv, display, reshape, mouseMoved, mouseStateChanged, keyPressed, keyReleased, keySpecial, keySpecialUp) &&
-		glContext->initShaders(materials, 6) &&
+		glContext->initShaders(materials, 7) &&
 		glContext->initModels(&models.front(), models.size()));
 	{
 		glContext->initCamera(glm::vec3(0.0, HEIGHT_FROM_GROUND, -15.0), glm::vec3(0.0, HEIGHT_FROM_GROUND, 0.0));

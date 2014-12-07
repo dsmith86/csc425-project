@@ -48,7 +48,7 @@ namespace GLContext {
 	{
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-		glutInitWindowSize(768, 768);
+		glutInitWindowSize(1080, 720);
 		glutInitContextVersion(4, 3);
 		glutInitContextProfile(GLUT_FORWARD_COMPATIBLE);
 		glutCreateWindow(argv[0]);
@@ -249,7 +249,11 @@ namespace GLContext {
 		{
 			this->lastTime = glutGet(GLUT_ELAPSED_TIME);
 
-			this->projectionTransform = glm::perspective<float>(45.0f, this->w / this->h, 0.01f, 1000.0f);
+			float width = glutGet(GLUT_WINDOW_WIDTH);
+			float height = glutGet(GLUT_WINDOW_HEIGHT);
+			float ratio = width / height;
+
+			this->projectionTransform = glm::perspective<float>(45.0f, ratio, 0.01f, 1000.0f);
 			this->viewTransform = glm::mat4() * glm::lookAt(this->camera->position, this->camera->gaze, glm::vec3(0.0, 1.0, 0.0));
 
 			glutMainLoop();
@@ -318,8 +322,11 @@ namespace GLContext {
 
 	void GLContext::reshape(int w, int h)
 	{
-		this->w = (float)w;
-		this->h = (float)h;
+		float width = glutGet(GLUT_WINDOW_WIDTH);
+		float height = glutGet(GLUT_WINDOW_HEIGHT);
+		float ratio = width / height;
+
+		this->projectionTransform = glm::perspective<float>(45.0f, ratio, 0.01f, 1000.0f);
 	}
 
 	void GLContext::mouseStateChanged(int button, int state)
