@@ -15,22 +15,16 @@ Additionally add the include directory for [GLM](http://glm.g-truc.net/0.9.5/ind
 This is an ongoing project that is constantly improved as I learn more advanced graphics programming concepts and OpenGL skills.
 
 Currently, it has the following features:
-* the ability to define and load in an arbitrary combination of different vertex and fragment shaders as "materials"
-* the ability to programmatically load the total number of models set up in main.cpp
-* model, view, projection and world coordinates
-* model rotation in place
-* texture mapping
-* some basic phong-esque shading
+* Support for multiple materials, each with their own shaders and textures
+* Diffuse lighting with distance-based falloff
+* Full camera controls (*WASD* to move, *arrow keys* or *mouse* to rotate the view)
+* A controllable light (*IJKL* to move, *[* and *]* to change height
 
-The world currently contains a collection of cubes (right now, 12 arranged in a circle) that can rotate freely in space.
-Each is mapped with a Minecraft-like dirt texture (albeit at a lower resolution).
+### Controls:
+#### Movement
+*W*, *A*, *S*, *D* move the camera forward, left, back, and right, respectively. The *Shift* modifier allows finer movement. Any combination of *WASD* can be used to move diagonally.
 
-### Demonstration:
+**Click here for a demonstration:**
+[![Demonstration](http://thumbs.gfycat.com/DefiantDisfiguredGreathornedowl-poster.jpg)](http://gfycat.com/DefiantDisfiguredGreathornedowl)
 
-![](http://fat.gfycat.com/EminentDependentKilldeer.gif)
-
-### Future plans:
-* mouse and keyboard events to move around the scene
-* fancier lighting
-* shadows
-* AI
+The *arrow keys* can be used to rotate the first-person camera to the left or right, or change the pitch up or down. Additionally, holding down the right mouse button and moving the mouse can be used to accomplish the same thing.
