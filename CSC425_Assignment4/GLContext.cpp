@@ -398,7 +398,7 @@ namespace GLContext {
 			// temporarily disabled until issues are resolved
 			//this->physicsModel->jump(JUMP_IMPULSE);
 		}
-		if (key == 'l')
+		if (key == 't') // toggle
 		{
 			this->lightingEnabled = !this->lightingEnabled;
 		}
@@ -427,7 +427,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('W'))
 		{
-			//this->camera->translate(Camera::DIRECTION::FORWARD, 0.25f);
+			this->camera->translate(Camera::DIRECTION::FORWARD, 0.25f);
 		}
 		if (this->keyBuffer->isSet('a'))
 		{
@@ -435,7 +435,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('A'))
 		{
-			//this->camera->translate(Camera::DIRECTION::LEFT, 0.25f);
+			this->camera->translate(Camera::DIRECTION::LEFT, 0.25f);
 		}
 		if (this->keyBuffer->isSet('s'))
 		{
@@ -443,7 +443,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('S'))
 		{
-			//this->camera->translate(Camera::DIRECTION::BACK, 0.25f);
+			this->camera->translate(Camera::DIRECTION::BACK, 0.25f);
 		}
 		if (this->keyBuffer->isSet('d'))
 		{
@@ -451,7 +451,7 @@ namespace GLContext {
 		}
 		if (this->keyBuffer->isSet('D'))
 		{
-			//this->camera->translate(Camera::DIRECTION::RIGHT, 0.25f);
+			this->camera->translate(Camera::DIRECTION::RIGHT, 0.25f);
 		}
 		if (this->keyBuffer->isSetSpecial(GLUT_KEY_LEFT))
 		{
@@ -469,6 +469,27 @@ namespace GLContext {
 		{
 			this->camera->pitch(-1.0f);
 		}
+		if (this->keyBuffer->isSet('j'))
+		{
+			this->light = this->light - this->camera->right * 0.25f;
+		}
+		if (this->keyBuffer->isSet('l'))
+		{
+			this->light = this->light + this->camera->right * 0.25f;
+		}
+		if (this->keyBuffer->isSet('i'))
+		{
+			glm::vec3 direction = this->camera->front;
+			direction.y = 0;
+			this->light = this->light + glm::normalize(direction) * 0.25f;
+		}
+		if (this->keyBuffer->isSet('k'))
+		{
+			glm::vec3 direction = this->camera->front;
+			direction.y = 0;
+			this->light = this->light - glm::normalize(direction) * 0.25f;
+		}
+
 
 		this->viewTransform = glm::lookAt(this->camera->position, this->camera->gaze, this->camera->up);
 	}
