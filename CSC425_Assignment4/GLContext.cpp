@@ -248,6 +248,7 @@ namespace GLContext {
 		if (this->success)
 		{
 			this->lastTime = glutGet(GLUT_ELAPSED_TIME);
+			this->lightingEnabled = true;
 
 			float width = glutGet(GLUT_WINDOW_WIDTH);
 			float height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -306,6 +307,10 @@ namespace GLContext {
 				GLint lightLoc = glGetUniformLocation(program, "uLight");
 
 				glUniform3fv(lightLoc, 1, &this->light[0]);
+
+				GLint lightingEnabledLoc = glGetUniformLocation(program, "uLightingEnabled");
+
+				glUniform1i(lightingEnabledLoc, this->lightingEnabled);
 
 				glDrawArrays(this->models[i].renderType, 0, this->models[i].vertices.size() / VECTOR_SIZE);
 			}
@@ -392,6 +397,10 @@ namespace GLContext {
 		{
 			// temporarily disabled until issues are resolved
 			//this->physicsModel->jump(JUMP_IMPULSE);
+		}
+		if (key == 'l')
+		{
+			this->lightingEnabled = !this->lightingEnabled;
 		}
 	}
 

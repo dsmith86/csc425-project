@@ -111,10 +111,9 @@ namespace GLContext {
 		std::unordered_map<const char*, GLuint> shaderPrograms;
 		std::unordered_map<const char*, GLuint> textures;
 		std::unordered_map<const char*, int> tiling;
-		float w;
-		float h;
 		bool mouseMoved;
 		bool mouseDown;
+		bool lightingEnabled;
 		int mouseLastX;
 		int mouseLastY;
 

@@ -11,22 +11,31 @@ uniform mat4 projectionTransform;
 uniform mat4 viewTransform;
 uniform mat4 modelTransform;
 uniform vec3 uLight;
+uniform bool uLightingEnabled;
 
 void main()
 {
 	gl_Position = projectionTransform * viewTransform * modelTransform * vec4(vPosition, 1.0);
-	vec3 normal = (modelTransform * vec4(vNormal, 1.0)).xyz;
-	vec3 light = uLight - (modelTransform * vec4(vPosition, 1.0)).xyz;
 
-	float lightIntensity = 1.0;
-	float diffuseConstant = 0.1;
+	if (uLightingEnabled)
+	{
+		vec3 normal = (modelTransform * vec4(vNormal, 1.0)).xyz;
+		vec3 light = uLight - (modelTransform * vec4(vPosition, 1.0)).xyz;
 
-	float ambient = 0.1;
-	float diffuse = diffuseConstant * max(dot(light, normal), 0.0) * lightIntensity;
+		float lightIntensity = 1.0;
+		float diffuseConstant = 0.1;
 
-	float lightMultiplier = ambient + diffuse;
+		float ambient = 0.1;
+		float diffuse = diffuseConstant * max(dot(light, normal), 0.0) * lightIntensity;
 
-	color = vec4(1.0);
+		float lightMultiplier = ambient + diffuse;
+
+		color = vec4(1.0) * lightMultiplier;
+	}
+	else
+	{
+		color = vec4(1.0);
+	}
 
 	Texcoord = texcoord;
 }
