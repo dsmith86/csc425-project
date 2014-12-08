@@ -16,15 +16,9 @@ uniform bool uNormalMapEnabled;
 void main()
 {
 	float lightMultiplier = 1;
-	vec3 N = normal;
 
 	if (uLightingEnabled)
 	{
-		if (uNormalMapEnabled)
-		{
-			//N = normalize( texture(uNormalMap, Texcoord) * 2.0 - 1.0).xyz;
-		}
-
 		vec3 light = uLight - position;
 		float lightDistance = length(light);
 		light = normalize(light);
@@ -33,7 +27,7 @@ void main()
 		float diffuseConstant = 0.1;
 
 		float ambient = 0.05;
-		float diffuse = diffuseConstant * max(dot(light, N), 0.0) * lightIntensity / lightDistance;
+		float diffuse = diffuseConstant * max(dot(light, normal), 0.0) * lightIntensity / lightDistance;
 
 		lightMultiplier = ambient + diffuse;
 	}
